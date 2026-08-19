@@ -16,6 +16,6 @@ bin/
 # Temp files
 _temp/
 .class
-
+present-changes-visually
 /text-ui-test/ACTUAL.TXT
 text-ui-test/EXPECTED-UNIX.TXT
