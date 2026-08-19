@@ -15,6 +15,7 @@ public class Tangent {
 
         Task[] tasks = new Task[100];
         int numItems = 0;
+
         try (Scanner scanner = new Scanner(System.in)) {
             while (scanner.hasNextLine()) {
                 String input = scanner.nextLine().trim();
@@ -36,6 +37,7 @@ public class Tangent {
                         }
                         System.out.println(DIVIDER);
                         break;
+
                     case "unmark":
                         int unmarkIdx = getTaskIndex(inputs, numItems);
                         if (unmarkIdx == -1) {
@@ -45,16 +47,29 @@ public class Tangent {
                         }
                         System.out.println(DIVIDER);
                         break;
+
+                    case "todo":
+                        ToDo td = new ToDo(inputs[1]);
+                        tasks[numItems] = td;
+                        numItems++;
+                        System.out.println("got it! you have a new task:");
+                        System.out.println(td);
+                        System.out.println("this is the #" + numItems + " item in the list");
+                        System.out.println(DIVIDER);
+                        break;
+
                     case "list":
                         for (int i = 0; i < numItems; i++) {
                             System.out.println((i + 1) + ". " + tasks[i]);
                         }
                         System.out.println(DIVIDER);
                         continue;
+
                     case "bye":
                         System.out.println("bye o/ hope to see you again soon");
                         System.out.println(DIVIDER);
                         return;
+
                     default:
                         if (numItems >= tasks.length) {
                             System.out.println("Sorry, the task list is full.");
@@ -70,7 +85,7 @@ public class Tangent {
             }
         }
     }
-    
+
     private static int getTaskIndex(String[] inputs, int numItems) {
         if (inputs.length < 2) {
             return -1;
@@ -94,7 +109,6 @@ public class Tangent {
             tasks[taskIndex].markAsUndone();
             System.out.println("i've marked it as undone!");
         }
-
         System.out.println(tasks[taskIndex]);
     }
 }
