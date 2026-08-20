@@ -1,4 +1,4 @@
-import java.util.Scanner;
+import java.util.*;
 public class Tangent {
     private static final String DIVIDER = "____________________________________________________________";
     public static void main(String[] args) {
@@ -13,8 +13,7 @@ public class Tangent {
         System.out.println("good morning/afternoon/evening ^-^ I'm TANGENT.\nwhat do you want me to do?");
         System.out.println(DIVIDER);
 
-        Task[] tasks = new Task[100];
-        int numItems = 0;
+        ArrayList<Task> tasks = new ArrayList<>();
 
         try (Scanner scanner = new Scanner(System.in)) {
             while (scanner.hasNextLine()) {
@@ -29,7 +28,7 @@ public class Tangent {
                 String command = inputs[0];
                 switch (command) {
                     case "mark":
-                        int markIdx = getTaskIndex(inputs, numItems);
+                        int markIdx = getTaskIndex(inputs, tasks);
                         if (markIdx == -1) {
                             System.out.println("invalid input! please ensure you entered a valid task number!");
                         } else {
@@ -39,7 +38,7 @@ public class Tangent {
                         break;
 
                     case "unmark":
-                        int unmarkIdx = getTaskIndex(inputs, numItems);
+                        int unmarkIdx = getTaskIndex(inputs, tasks);
                         if (unmarkIdx == -1) {
                             System.out.println("invalid input! please ensure you entered a valid task number!");
                         } else {
@@ -49,18 +48,20 @@ public class Tangent {
                         break;
 
                     case "todo":
-                        ToDo td = new ToDo(inputs[1]);
-                        tasks[numItems] = td;
-                        numItems++;
-                        System.out.println("got it! you have a new task:");
-                        System.out.println(td);
-                        System.out.println("this is the #" + numItems + " item in the list");
-                        System.out.println(DIVIDER);
+                        handleTask(inputs[1], tasks, "todo");
+                        break;
+
+                    case "deadline":
+                        handleTask(inputs[1], tasks, "deadline");
+                        break;
+
+                    case "event":
+                        handleTask(inputs[1], tasks, "event");
                         break;
 
                     case "list":
-                        for (int i = 0; i < numItems; i++) {
-                            System.out.println((i + 1) + ". " + tasks[i]);
+                        for (int i = 0; i < tasks.size(); i++) {
+                            System.out.println((i + 1) + ". " + tasks.get(i));
                         }
                         System.out.println(DIVIDER);
                         continue;
@@ -71,14 +72,8 @@ public class Tangent {
                         return;
 
                     default:
-                        if (numItems >= tasks.length) {
-                            System.out.println("Sorry, the task list is full.");
-                            System.out.println(DIVIDER);
-                            continue;
-                        }
                         System.out.println("i've added: " + input);
-                        tasks[numItems] = new Task(input);
-                        numItems++;
+                        tasks.add(new Task(input));
                         System.out.println(DIVIDER);
                         break;
                 }
@@ -86,13 +81,13 @@ public class Tangent {
         }
     }
 
-    private static int getTaskIndex(String[] inputs, int numItems) {
+    private static int getTaskIndex(String[] inputs, ArrayList<Task> tasks) {
         if (inputs.length < 2) {
             return -1;
         }
         try {
             int taskIndex = Integer.parseInt(inputs[1]) - 1;
-            if (0 <= taskIndex && taskIndex < numItems) {
+            if (0 <= taskIndex && taskIndex < tasks.size()) {
                 return taskIndex;
             }
         } catch (NumberFormatException  e) {
@@ -101,14 +96,40 @@ public class Tangent {
         return -1;
     }
 
-    private static void updateTaskStatus(Task[] tasks, int taskIndex, boolean isDone) {
+    private static void updateTaskStatus(ArrayList<Task> tasks, int taskIndex, boolean isDone) {
         if (isDone) {
-            tasks[taskIndex].markAsDone();
+            tasks.get(taskIndex).markAsDone();
             System.out.println("i've marked it as done!");
         } else {
-            tasks[taskIndex].markAsUndone();
+            tasks.get(taskIndex).markAsUndone();
             System.out.println("i've marked it as undone!");
         }
-        System.out.println(tasks[taskIndex]);
+        System.out.println(tasks.get(taskIndex));
+    }
+
+    private static ArrayList<Task> handleTask(String details, ArrayList<Task> tasks, String type) {
+        Task t;
+        switch (type) {
+            case "todo":
+                t = new ToDo(details);
+                break;
+            case "deadline":
+                String[] deadlineInputs = details.split(" /by ");
+                t = new Deadline(deadlineInputs[0], deadlineInputs[1]);
+                break;
+            case "event":
+                String[] eventInputs = details.split(" /from ");
+                String[] fromTo = eventInputs[1].split(" /to ");
+                t = new Event(eventInputs[0], fromTo[0], fromTo[1]);
+                break;
+            default:
+                t = null;
+        }
+        tasks.add(t);
+        System.out.println("got it! you have a new task: ");
+        System.out.println(t);
+        System.out.println("you now have " + tasks.size() + " tasks!");
+        System.out.println(DIVIDER);
+        return tasks;
     }
 }
