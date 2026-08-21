@@ -35,7 +35,7 @@ ____________________________________________________________
 ____________________________________________________________
 got it! you have a new task: 
 [T][ ] borrow book
-you now have 1 tasks!
+you now have 1 task!
 ____________________________________________________________
 ____________________________________________________________
 got it! you have a new task: 
@@ -248,3 +248,33 @@ Matches the complete expected-output block for the test case above.
 ```
 
 - **Result:** PASS
+
+## Test session record — 2026-08-21 (custom-exception refactor review)
+
+## Attempted test: add and list all Level 4 task types
+
+- **Aim:** Verify that valid `todo`, `deadline`, and `event` commands create the appropriate task subclasses and that `list` displays their polymorphic string representations.
+- **Console input sent:**
+
+```text
+todo borrow book
+deadline return book /by Sunday
+event project meeting /from Mon 2pm /to 4pm
+list
+bye
+```
+
+- **Expected output:**
+
+```text
+Matches the complete expected-output block for the test case above.
+```
+
+- **Actual output:**
+
+```text
+Matches the complete expected-output block except the first task count line is:
+you now have 1 task!
+```
+
+- **Result:** FAIL — the test plan expects `you now have 1 tasks!`, but the program correctly prints `you now have 1 task!`. Testing stopped after this first failure as required.
