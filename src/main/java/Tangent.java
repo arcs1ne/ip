@@ -48,18 +48,20 @@ public class Tangent {
                         break;
 
                     case "todo":
-                        handleTask(inputs[1], tasks, "todo");
-                        break;
-
                     case "deadline":
-                        handleTask(inputs[1], tasks, "deadline");
-                        break;
-
                     case "event":
-                        handleTask(inputs[1], tasks, "event");
+                        if (inputs.length < 2 || inputs[1].trim().isEmpty()) {
+                            System.out.println("please provide a task description!");
+                            System.out.println(DIVIDER);
+                        } else {
+                            handleTask(inputs[1], tasks, command);
+                        }
                         break;
 
                     case "list":
+                        if (tasks.isEmpty()) {
+                            System.out.println("no tasks yet!");
+                        }
                         for (int i = 0; i < tasks.size(); i++) {
                             System.out.println((i + 1) + ". " + tasks.get(i));
                         }
@@ -72,8 +74,7 @@ public class Tangent {
                         return;
 
                     default:
-                        System.out.println("i've added: " + input);
-                        tasks.add(new Task(input));
+                        System.out.println("invalid command!");
                         System.out.println(DIVIDER);
                         break;
                 }
@@ -107,29 +108,76 @@ public class Tangent {
         System.out.println(tasks.get(taskIndex));
     }
 
-    private static ArrayList<Task> handleTask(String details, ArrayList<Task> tasks, String type) {
+    private static void handleTask(String details, ArrayList<Task> tasks, String type) {
         Task t;
+        final String byMarker = " /by ";
+        final String fromMarker = " /from ";
+        final String toMarker = " /to ";
+        String description = details.trim();
+
         switch (type) {
             case "todo":
-                t = new ToDo(details);
+                t = new ToDo(description);
                 break;
+
             case "deadline":
-                String[] deadlineInputs = details.split(" /by ");
-                t = new Deadline(deadlineInputs[0], deadlineInputs[1]);
+                int byIndex = details.indexOf(byMarker);
+
+                if (byIndex <= 0 || details.indexOf(byMarker, byIndex + byMarker.length()) != -1) {
+                    System.out.println("please use: deadline DESCRIPTION /by TIME");
+                    System.out.println(DIVIDER);
+                    return;
+                }
+
+                String deadlineDescription = details.substring(0, byIndex).trim();
+                String by = details.substring(byIndex + byMarker.length()).trim();
+
+                if (deadlineDescription.isEmpty() || by.isEmpty()) {
+                    System.out.println("please use: deadline DESCRIPTION /by TIME");
+                    System.out.println(DIVIDER);
+                    return;
+                }
+
+                t = new Deadline(deadlineDescription, by);
                 break;
+
             case "event":
-                String[] eventInputs = details.split(" /from ");
-                String[] fromTo = eventInputs[1].split(" /to ");
-                t = new Event(eventInputs[0], fromTo[0], fromTo[1]);
+                int fromIndex = details.indexOf(fromMarker);
+                int toIndex = details.indexOf(toMarker);
+
+                if (fromIndex <= 0 || toIndex <= fromIndex
+                        || details.indexOf(fromMarker, fromIndex + fromMarker.length()) != -1
+                        || details.indexOf(toMarker, toIndex + toMarker.length()) != -1) {
+                    System.out.println("please use: event DESCRIPTION /from START /to END");
+                    System.out.println(DIVIDER);
+                    return;
+                }
+
+                String eventDescription = details.substring(0, fromIndex).trim();
+                String from = details.substring(fromIndex + fromMarker.length(), toIndex).trim();
+                String to = details.substring(toIndex + toMarker.length()).trim();
+
+                if (eventDescription.isEmpty() || from.isEmpty() || to.isEmpty()) {
+                    System.out.println("please use: event DESCRIPTION /from START /to END");
+                    System.out.println(DIVIDER);
+                    return;
+                }
+                t = new Event(eventDescription, from, to);
                 break;
+
             default:
-                t = null;
+                System.out.println("unknown task type!");
+                System.out.println(DIVIDER);
+                return;
         }
         tasks.add(t);
         System.out.println("got it! you have a new task: ");
         System.out.println(t);
-        System.out.println("you now have " + tasks.size() + " tasks!");
+        if (tasks.size() == 1) {
+            System.out.println("you now have 1 task!");
+        } else {
+            System.out.println("you now have " + tasks.size() + " tasks!");
+        }
         System.out.println(DIVIDER);
-        return tasks;
     }
 }
