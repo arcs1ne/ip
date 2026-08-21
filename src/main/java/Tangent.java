@@ -25,22 +25,22 @@ public class Tangent {
                     continue;
                 }
                 String[] inputs = input.split(" ", 2);
-                String command = inputs[0];
                 try {
+                    Command command = Command.fromInput(inputs[0]);
                     switch (command) {
-                        case "mark":
+                        case MARK:
                             int markIdx = getTaskIndex(inputs, tasks);
                             updateTaskStatus(tasks, markIdx, true);
                             System.out.println(DIVIDER);
                             break;
 
-                        case "unmark":
+                        case UNMARK:
                             int unmarkIdx = getTaskIndex(inputs, tasks);
                             updateTaskStatus(tasks, unmarkIdx, false);
                             System.out.println(DIVIDER);
                             break;
 
-                        case "delete":
+                        case DELETE:
                             int delIdx = getTaskIndex(inputs, tasks);
                             System.out.println("got it! i've removed this task:");
                             Task removedTask = tasks.remove(delIdx);
@@ -55,9 +55,9 @@ public class Tangent {
                             System.out.println(DIVIDER);
                             break;
 
-                        case "todo":
-                        case "deadline":
-                        case "event":
+                        case TODO:
+                        case DEADLINE:
+                        case EVENT:
                             if (inputs.length < 2 || inputs[1].trim().isEmpty()) {
                                 System.out.println("please provide a task description!");
                                 System.out.println(DIVIDER);
@@ -66,7 +66,7 @@ public class Tangent {
                             }
                             break;
 
-                        case "list":
+                        case LIST:
                             if (tasks.isEmpty()) {
                                 System.out.println("no tasks yet!");
                             }
@@ -76,7 +76,7 @@ public class Tangent {
                             System.out.println(DIVIDER);
                             continue;
 
-                        case "bye":
+                        case BYE:
                             System.out.println("bye o/ hope to see you again soon");
                             System.out.println(DIVIDER);
                             return;
@@ -120,7 +120,7 @@ public class Tangent {
         System.out.println(tasks.get(taskIndex));
     }
 
-    private static void handleTask(String details, ArrayList<Task> tasks, String type) throws TangentException {
+    private static void handleTask(String details, ArrayList<Task> tasks, Command type) throws TangentException {
         Task t;
         final String byMarker = " /by ";
         final String fromMarker = " /from ";
@@ -128,11 +128,11 @@ public class Tangent {
         String description = details.trim();
 
         switch (type) {
-            case "todo":
+            case TODO:
                 t = new ToDo(description);
                 break;
 
-            case "deadline":
+            case DEADLINE:
                 int byIndex = details.indexOf(byMarker);
 
                 if (byIndex <= 0 || details.indexOf(byMarker, byIndex + byMarker.length()) != -1) {
@@ -149,7 +149,7 @@ public class Tangent {
                 t = new Deadline(deadlineDescription, by);
                 break;
 
-            case "event":
+            case EVENT:
                 int fromIndex = details.indexOf(fromMarker);
                 int toIndex = details.indexOf(toMarker);
 

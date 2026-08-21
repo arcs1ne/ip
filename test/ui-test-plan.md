@@ -278,3 +278,59 @@ you now have 1 task!
 ```
 
 - **Result:** FAIL — the test plan expects `you now have 1 tasks!`, but the program correctly prints `you now have 1 task!`. Testing stopped after this first failure as required.
+
+## Test session record — 2026-08-21 (command enum review)
+
+## Attempted test: add and list all Level 4 task types
+
+- **Aim:** Verify that valid `todo`, `deadline`, and `event` commands create the appropriate task subclasses and that `list` displays their polymorphic string representations.
+- **Console input sent:**
+
+```text
+todo borrow book
+deadline return book /by Sunday
+event project meeting /from Mon 2pm /to 4pm
+list
+bye
+```
+
+- **Expected output:**
+
+```text
+Matches the complete expected-output block for the test case above.
+```
+
+- **Actual output:**
+
+```text
+Matches the complete expected-output block for the test case above.
+```
+
+- **Result:** PASS
+
+## Attempted test: reject malformed task commands
+
+- **Aim:** Verify that incomplete task commands, empty descriptions, and an event with reversed markers show an error without adding a task or crashing.
+- **Console input sent:**
+
+```text
+todo
+deadline /by Sunday
+event meeting /to 4pm /from 2pm
+list
+bye
+```
+
+- **Expected output:**
+
+```text
+Matches the complete expected-output block for the test case above.
+```
+
+- **Actual output:**
+
+```text
+Matches the complete expected-output block for the test case above.
+```
+
+- **Result:** PASS
