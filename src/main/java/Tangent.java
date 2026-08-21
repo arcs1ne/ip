@@ -40,6 +40,21 @@ public class Tangent {
                             System.out.println(DIVIDER);
                             break;
 
+                        case "delete":
+                            int delIdx = getTaskIndex(inputs, tasks);
+                            System.out.println("got it! i've removed this task:");
+                            Task removedTask = tasks.remove(delIdx);
+                            System.out.println(removedTask);
+                            if (tasks.isEmpty()) {
+                                System.out.println("you now have no tasks in the list!");
+                            } else if (tasks.size() == 1) {
+                                System.out.println("you now have 1 task in the list!");
+                            } else {
+                                System.out.println("you now have " + tasks.size() + " tasks in the list!");
+                            }
+                            System.out.println(DIVIDER);
+                            break;
+
                         case "todo":
                         case "deadline":
                         case "event":
@@ -161,9 +176,9 @@ public class Tangent {
         System.out.println("got it! you have a new task: ");
         System.out.println(t);
         if (tasks.size() == 1) {
-            System.out.println("you now have 1 task!");
+            System.out.println("you now have 1 task in the list!");
         } else {
-            System.out.println("you now have " + tasks.size() + " tasks!");
+            System.out.println("you now have " + tasks.size() + " tasks in the list!");
         }
         System.out.println(DIVIDER);
     }
