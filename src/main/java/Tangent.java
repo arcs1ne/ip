@@ -26,75 +26,72 @@ public class Tangent {
                 }
                 String[] inputs = input.split(" ", 2);
                 String command = inputs[0];
-                switch (command) {
-                    case "mark":
-                        int markIdx = getTaskIndex(inputs, tasks);
-                        if (markIdx == -1) {
-                            System.out.println("invalid input! please ensure you entered a valid task number!");
-                        } else {
+                try {
+                    switch (command) {
+                        case "mark":
+                            int markIdx = getTaskIndex(inputs, tasks);
                             updateTaskStatus(tasks, markIdx, true);
-                        }
-                        System.out.println(DIVIDER);
-                        break;
-
-                    case "unmark":
-                        int unmarkIdx = getTaskIndex(inputs, tasks);
-                        if (unmarkIdx == -1) {
-                            System.out.println("invalid input! please ensure you entered a valid task number!");
-                        } else {
-                            updateTaskStatus(tasks, unmarkIdx, false);
-                        }
-                        System.out.println(DIVIDER);
-                        break;
-
-                    case "todo":
-                    case "deadline":
-                    case "event":
-                        if (inputs.length < 2 || inputs[1].trim().isEmpty()) {
-                            System.out.println("please provide a task description!");
                             System.out.println(DIVIDER);
-                        } else {
-                            handleTask(inputs[1], tasks, command);
-                        }
-                        break;
+                            break;
 
-                    case "list":
-                        if (tasks.isEmpty()) {
-                            System.out.println("no tasks yet!");
-                        }
-                        for (int i = 0; i < tasks.size(); i++) {
-                            System.out.println((i + 1) + ". " + tasks.get(i));
-                        }
-                        System.out.println(DIVIDER);
-                        continue;
+                        case "unmark":
+                            int unmarkIdx = getTaskIndex(inputs, tasks);
+                            updateTaskStatus(tasks, unmarkIdx, false);
+                            System.out.println(DIVIDER);
+                            break;
 
-                    case "bye":
-                        System.out.println("bye o/ hope to see you again soon");
-                        System.out.println(DIVIDER);
-                        return;
+                        case "todo":
+                        case "deadline":
+                        case "event":
+                            if (inputs.length < 2 || inputs[1].trim().isEmpty()) {
+                                System.out.println("please provide a task description!");
+                                System.out.println(DIVIDER);
+                            } else {
+                                handleTask(inputs[1], tasks, command);
+                            }
+                            break;
 
-                    default:
-                        System.out.println("invalid command!");
-                        System.out.println(DIVIDER);
-                        break;
+                        case "list":
+                            if (tasks.isEmpty()) {
+                                System.out.println("no tasks yet!");
+                            }
+                            for (int i = 0; i < tasks.size(); i++) {
+                                System.out.println((i + 1) + ". " + tasks.get(i));
+                            }
+                            System.out.println(DIVIDER);
+                            continue;
+
+                        case "bye":
+                            System.out.println("bye o/ hope to see you again soon");
+                            System.out.println(DIVIDER);
+                            return;
+
+                        default:
+                            System.out.println("invalid command!");
+                            System.out.println(DIVIDER);
+                            break;
+                    }
+                } catch (TangentException e) {
+                    System.out.println(e.getMessage());
+                    System.out.println(DIVIDER);
                 }
             }
         }
     }
 
-    private static int getTaskIndex(String[] inputs, ArrayList<Task> tasks) {
+    private static int getTaskIndex(String[] inputs, ArrayList<Task> tasks) throws TangentException {
         if (inputs.length < 2) {
-            return -1;
+            throw new TangentException("please provide a valid task number!");
         }
         try {
             int taskIndex = Integer.parseInt(inputs[1]) - 1;
-            if (0 <= taskIndex && taskIndex < tasks.size()) {
-                return taskIndex;
+            if (taskIndex < 0 || taskIndex >= tasks.size()) {
+                throw new TangentException("please provide a valid task number!");
             }
+            return taskIndex;
         } catch (NumberFormatException  e) {
-            return -1;
+            throw new TangentException("please provide a valid task number!");
         }
-        return -1;
     }
 
     private static void updateTaskStatus(ArrayList<Task> tasks, int taskIndex, boolean isDone) {
@@ -108,7 +105,7 @@ public class Tangent {
         System.out.println(tasks.get(taskIndex));
     }
 
-    private static void handleTask(String details, ArrayList<Task> tasks, String type) {
+    private static void handleTask(String details, ArrayList<Task> tasks, String type) throws TangentException {
         Task t;
         final String byMarker = " /by ";
         final String fromMarker = " /from ";
@@ -124,18 +121,14 @@ public class Tangent {
                 int byIndex = details.indexOf(byMarker);
 
                 if (byIndex <= 0 || details.indexOf(byMarker, byIndex + byMarker.length()) != -1) {
-                    System.out.println("please use: deadline DESCRIPTION /by TIME");
-                    System.out.println(DIVIDER);
-                    return;
+                    throw new TangentException("please use: deadline DESCRIPTION /by TIME");
                 }
 
                 String deadlineDescription = details.substring(0, byIndex).trim();
                 String by = details.substring(byIndex + byMarker.length()).trim();
 
                 if (deadlineDescription.isEmpty() || by.isEmpty()) {
-                    System.out.println("please use: deadline DESCRIPTION /by TIME");
-                    System.out.println(DIVIDER);
-                    return;
+                    throw new TangentException("please use: deadline DESCRIPTION /by TIME");
                 }
 
                 t = new Deadline(deadlineDescription, by);
@@ -148,9 +141,7 @@ public class Tangent {
                 if (fromIndex <= 0 || toIndex <= fromIndex
                         || details.indexOf(fromMarker, fromIndex + fromMarker.length()) != -1
                         || details.indexOf(toMarker, toIndex + toMarker.length()) != -1) {
-                    System.out.println("please use: event DESCRIPTION /from START /to END");
-                    System.out.println(DIVIDER);
-                    return;
+                    throw new TangentException("please use: event DESCRIPTION /from START /to END");
                 }
 
                 String eventDescription = details.substring(0, fromIndex).trim();
@@ -158,17 +149,13 @@ public class Tangent {
                 String to = details.substring(toIndex + toMarker.length()).trim();
 
                 if (eventDescription.isEmpty() || from.isEmpty() || to.isEmpty()) {
-                    System.out.println("please use: event DESCRIPTION /from START /to END");
-                    System.out.println(DIVIDER);
-                    return;
+                    throw new TangentException("please use: event DESCRIPTION /from START /to END");
                 }
                 t = new Event(eventDescription, from, to);
                 break;
 
             default:
-                System.out.println("unknown task type!");
-                System.out.println(DIVIDER);
-                return;
+                throw new TangentException("unknown task type!");
         }
         tasks.add(t);
         System.out.println("got it! you have a new task: ");
