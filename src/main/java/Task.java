@@ -12,11 +12,11 @@ public class Task {
     }
 
     public void markAsDone() {
-        this.isDone = true;
+        this.isDone = true; // marks task as done
     }
 
     public void markAsUndone() {
-        this.isDone = false;
+        this.isDone = false; // marks task as undone
     }
 
     @Override

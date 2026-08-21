@@ -94,6 +94,15 @@ public class Tangent {
         }
     }
 
+    /**
+     * Returns the index of the task to work with given the user's input.
+     * If the input does not contain a valid index, an exception is thrown.
+     *
+     * @param inputs String array containing the command and the rest of the input from the user.
+     * @param tasks ArrayList of stored tasks.
+     * @return Index of the task to operate on
+     * @throws TangentException if user provides a non-numeric index or 1 <= index <= tasks.size() is false.
+     */
     private static int getTaskIndex(String[] inputs, ArrayList<Task> tasks) throws TangentException {
         if (inputs.length < 2) {
             throw new TangentException("please provide a valid task number!");
@@ -109,6 +118,13 @@ public class Tangent {
         }
     }
 
+    /**
+     * Marks a task as done or undone.
+     *
+     * @param tasks ArrayList of stored tasks.
+     * @param taskIndex The index of the task to operate on.
+     * @param isDone The current state of the task (done or undone).
+     */
     private static void updateTaskStatus(ArrayList<Task> tasks, int taskIndex, boolean isDone) {
         if (isDone) {
             tasks.get(taskIndex).markAsDone();
@@ -120,6 +136,16 @@ public class Tangent {
         System.out.println(tasks.get(taskIndex));
     }
 
+    /**
+     * Adds a task of a specific type to the ArrayList of tasks.
+     * If the details of the task are not in the right format, an exception is thrown.
+     *
+     * @param details The rest of the user's input after the command.
+     * @param tasks ArrayList of stored tasks.
+     * @param type Type of Task to add: ToDo, Event or Deadline
+     * @throws TangentException if user's input does not match the specified format.
+     *
+     */
     private static void handleTask(String details, ArrayList<Task> tasks, Command type) throws TangentException {
         Task t;
         final String byMarker = " /by ";
