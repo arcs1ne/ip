@@ -1,4 +1,12 @@
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.FileReader;
+import java.util.Scanner;
+import java.util.ArrayList;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 public class Tangent {
     private static final String DIVIDER = "____________________________________________________________";
     public static void main(String[] args) {
@@ -14,7 +22,11 @@ public class Tangent {
         System.out.println(DIVIDER);
 
         ArrayList<Task> tasks = new ArrayList<>();
-
+        try {
+            tasks = initializeTasks();
+        } catch (TangentException e) {
+            System.out.println(e.getMessage());
+        }
         try (Scanner scanner = new Scanner(System.in)) {
             while (scanner.hasNextLine()) {
                 String input = scanner.nextLine().trim();
@@ -207,5 +219,48 @@ public class Tangent {
             System.out.println("you now have " + tasks.size() + " tasks in the list!");
         }
         System.out.println(DIVIDER);
+    }
+
+    /** Initializes a list of tasks based on the text file in the hard disk.
+     * Creates a new folder and/or text file if it is not present.
+     *
+     * @throws TangentException if the file is not found or has formatting errors.
+     */
+    private static ArrayList<Task> initializeTasks() throws TangentException {
+        ArrayList<Task> tasks = new ArrayList<>();
+        Path dirPath = Paths.get("./data");
+        Path filePath = dirPath.resolve("tangent.txt");
+        try {
+            if (Files.notExists(dirPath)) {
+                Files.createDirectories(dirPath);
+            }
+            if (Files.notExists(filePath)) {
+                Files.createFile(filePath);
+            }
+            try (BufferedReader br = new BufferedReader(new FileReader("./data/tangent.txt"))) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    tasks.add(getTask(line));
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("An error occurred during file operations: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return tasks;
+    }
+
+    private static Task getTask(String line) throws TangentException {
+        String[] data = line.split(" \\| ");
+        Task t = switch (data[0]) {
+            case "T" -> new ToDo(data[2]);
+            case "D" -> new Deadline(data[2], data[3]);
+            case "E" -> new Event(data[2], data[3], data[4]);
+            default -> throw new TangentException("error in text file :(");
+        };
+        if (Integer.parseInt(data[1]) == 1) {
+            t.markAsDone();
+        }
+        return t;
     }
 }
