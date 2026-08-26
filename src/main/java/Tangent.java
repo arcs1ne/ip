@@ -1,6 +1,5 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.FileReader;
+import java.io.*;
+import java.util.List;
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.nio.file.Files;
@@ -137,7 +136,7 @@ public class Tangent {
      * @param taskIndex The index of the task to operate on.
      * @param isDone The current state of the task (done or undone).
      */
-    private static void updateTaskStatus(ArrayList<Task> tasks, int taskIndex, boolean isDone) {
+    private static void updateTaskStatus(ArrayList<Task> tasks, int taskIndex, boolean isDone) throws TangentException {
         if (isDone) {
             tasks.get(taskIndex).markAsDone();
             System.out.println("i've marked it as done!");
@@ -145,7 +144,15 @@ public class Tangent {
             tasks.get(taskIndex).markAsUndone();
             System.out.println("i've marked it as undone!");
         }
-        System.out.println(tasks.get(taskIndex));
+        try {
+            Path path = Paths.get("./data/tangent.txt");
+            List<String> lines = Files.readAllLines(path);
+            lines.set(taskIndex, lines.get(taskIndex).replaceFirst(isDone ? "0" : "1", isDone ? "1" : "0"));
+            Files.write(path, lines);
+        } catch (IOException e) {
+            throw new TangentException("can't find file :(");
+        }
+
     }
 
     /**
@@ -160,6 +167,7 @@ public class Tangent {
      */
     private static void handleTask(String details, ArrayList<Task> tasks, Command type) throws TangentException {
         Task t;
+        String textString;
         final String byMarker = " /by ";
         final String fromMarker = " /from ";
         final String toMarker = " /to ";
@@ -168,6 +176,7 @@ public class Tangent {
         switch (type) {
             case TODO:
                 t = new ToDo(description);
+                textString = "T | 0 | " + description;
                 break;
 
             case DEADLINE:
@@ -185,6 +194,7 @@ public class Tangent {
                 }
 
                 t = new Deadline(deadlineDescription, by);
+                textString = "D | 0 | " + description +  " | " + by;
                 break;
 
             case EVENT:
@@ -205,10 +215,17 @@ public class Tangent {
                     throw new TangentException("please use: event DESCRIPTION /from START /to END");
                 }
                 t = new Event(eventDescription, from, to);
+                textString = "E | 0 | " + eventDescription + " | " + from + " | " + to;
                 break;
 
             default:
                 throw new TangentException("unknown task type!");
+        }
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("./data/tangent.txt", true))) {
+            bw.write(textString);
+            bw.newLine();
+        } catch (IOException e) {
+            throw new TangentException("can't find text file :(");
         }
         tasks.add(t);
         System.out.println("got it! you have a new task: ");
@@ -222,7 +239,7 @@ public class Tangent {
     }
 
     /** Initializes a list of tasks based on the text file in the hard disk.
-     * Creates a new folder and/or text file if it is not present.
+     * Creates a new folder and/or text file if it is not present..
      *
      * @throws TangentException if the file is not found or has formatting errors.
      */
@@ -244,8 +261,7 @@ public class Tangent {
                 }
             }
         } catch (IOException e) {
-            System.err.println("An error occurred during file operations: " + e.getMessage());
-            e.printStackTrace();
+            throw new TangentException("can't find the file :(");
         }
         return tasks;
     }
