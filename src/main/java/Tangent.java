@@ -5,9 +5,16 @@ import java.util.ArrayList;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.Locale;
 
 public class Tangent {
+    private static final DateTimeFormatter INPUT_FORMATTER =
+            DateTimeFormatter.ofPattern("d/M/yyyy HHmm");
     private static final String DIVIDER = "____________________________________________________________";
+
     public static void main(String[] args) {
         String banner = "████████╗ █████╗ ███╗   ██╗ ██████╗ ███████╗███╗   ██╗████████╗\n"+
     "╚══██╔══╝██╔══██╗████╗  ██║██╔════╝ ██╔════╝████╗  ██║╚══██╔══╝\n"+
@@ -193,8 +200,8 @@ public class Tangent {
                     throw new TangentException("please use: deadline DESCRIPTION /by TIME");
                 }
 
-                t = new Deadline(deadlineDescription, by);
-                textString = "D | 0 | " + description +  " | " + by;
+                t = new Deadline(deadlineDescription, parseDateTime(by));
+                textString = "D | 0 | " + deadlineDescription +  " | " + by;
                 break;
 
             case EVENT:
@@ -214,7 +221,12 @@ public class Tangent {
                 if (eventDescription.isEmpty() || from.isEmpty() || to.isEmpty()) {
                     throw new TangentException("please use: event DESCRIPTION /from START /to END");
                 }
-                t = new Event(eventDescription, from, to);
+                LocalDateTime fromDateTime = parseDateTime(from);
+                LocalDateTime toDateTime = parseDateTime(to);
+                if (!toDateTime.isAfter(fromDateTime)) {
+                    throw new TangentException("your end time must be later than your start time!");
+                }
+                t = new Event(eventDescription, parseDateTime(from), parseDateTime(to));
                 textString = "E | 0 | " + eventDescription + " | " + from + " | " + to;
                 break;
 
@@ -270,13 +282,21 @@ public class Tangent {
         String[] data = line.split(" \\| ");
         Task t = switch (data[0]) {
             case "T" -> new ToDo(data[2]);
-            case "D" -> new Deadline(data[2], data[3]);
-            case "E" -> new Event(data[2], data[3], data[4]);
+            case "D" -> new Deadline(data[2], parseDateTime(data[3]));
+            case "E" -> new Event(data[2], parseDateTime(data[3]), parseDateTime(data[4]));
             default -> throw new TangentException("error in text file :(");
         };
         if (Integer.parseInt(data[1]) == 1) {
             t.markAsDone();
         }
         return t;
+    }
+
+    public static LocalDateTime parseDateTime(String input) throws TangentException {
+        try {
+            return LocalDateTime.parse(input.trim(), INPUT_FORMATTER);
+        } catch (DateTimeParseException e) {
+            throw new TangentException("bad date format :( ensure your dates are in the format DD/MM/YYYY HHmm (example: 07/06/2026 2200)");
+        }
     }
 }
