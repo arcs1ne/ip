@@ -1,3 +1,10 @@
+package tangent.command;
+import tangent.exception.TangentException;
+import tangent.storage.Storage;
+import tangent.task.Task;
+import tangent.task.TaskList;
+import tangent.ui.Ui;
+
 /** Removes one task from the task list and saves the result. */
 public class DeleteCommand extends Command {
     private final int taskIndex;

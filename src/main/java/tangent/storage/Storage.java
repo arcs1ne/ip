@@ -1,3 +1,11 @@
+package tangent.storage;
+
+import tangent.exception.TangentException;
+import tangent.task.Deadline;
+import tangent.task.Event;
+import tangent.task.Task;
+import tangent.task.ToDo;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -10,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Loads tasks from, and saves tasks to, Tangent's data file.
+ * Loads tasks from, and saves tasks to, tangent.Tangent's data file.
  */
 public class Storage {
     private static final DateTimeFormatter FILE_DATE_FORMATTER = DateTimeFormatter

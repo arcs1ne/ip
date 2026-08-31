@@ -1,3 +1,11 @@
+package tangent.command;
+
+import tangent.exception.TangentException;
+import tangent.storage.Storage;
+import tangent.task.Task;
+import tangent.task.TaskList;
+import tangent.ui.Ui;
+
 /** Adds one validated task to the task list and saves the result. */
 public class AddCommand extends Command {
 

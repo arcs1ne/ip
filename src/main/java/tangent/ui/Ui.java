@@ -1,3 +1,8 @@
+package tangent.ui;
+
+import tangent.task.Task;
+import tangent.task.TaskList;
+
 import java.util.Scanner;
 
 /**
@@ -13,7 +18,7 @@ public class Ui {
                ██║   ██║  ██║██║ ╚████║╚██████╔╝███████╗██║ ╚████║   ██║
                ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚══════╝╚═╝  ╚═══╝   ╚═╝""";
 
-    /** Displays the greeting shown when Tangent starts. */
+    /** Displays the greeting shown when tangent.Tangent starts. */
     public void showWelcome() {
         showDivider();
         System.out.println(BANNER);
@@ -46,7 +51,7 @@ public class Ui {
         }
     }
 
-    /** Displays the farewell message shown when Tangent exits. */
+    /** Displays the farewell message shown when tangent.Tangent exits. */
     public void showGoodbye() {
         System.out.println("bye o/ hope to see you again soon");
     }

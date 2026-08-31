@@ -5,7 +5,7 @@ Run the cases in order from an empty `data` directory. The first creates the dat
 ## Launch command
 
 ```text
-java '-Dstdout.encoding=UTF-8' -cp C:\Users\tangs\Downloads\ip\build-review Tangent
+java '-Dstdout.encoding=UTF-8' -cp C:\Users\tangs\Downloads\ip\build-review tangent.Tangent
 ```
 
 ## Test case: create and list dated tasks
@@ -197,7 +197,7 @@ bye o/ hope to see you again soon
 ____________________________________________________________
 ```
 
-## Test session record — 2026-08-31 (Ui extraction)
+## Test session record — 2026-08-31 (tangent.ui.Ui extraction)
 
 Both test cases passed in order with Java 25.0.4 in an isolated `ui-test-workspace` directory.
 
@@ -253,7 +253,7 @@ Exactly matched the complete expected-output block for this test case above.
 
 - **Result:** PASS
 
-## Test session record — 2026-08-31 (Storage extraction)
+## Test session record — 2026-08-31 (tangent.storage.Storage extraction)
 
 Both test cases passed in order with Java 25.0.4 in an isolated `ui-test-storage-workspace` directory.
 
@@ -309,7 +309,7 @@ Exactly matched the complete expected-output block for this test case above.
 
 - **Result:** PASS
 
-## Test session record — 2026-08-31 (TaskList extraction)
+## Test session record — 2026-08-31 (tangent.task.TaskList extraction)
 
 Both test cases passed in order with Java 25.0.4 in an isolated `ui-test-tasklist-workspace` directory.
 
@@ -365,7 +365,7 @@ Exactly matched the complete expected-output block for this test case above.
 
 - **Result:** PASS
 
-## Test session record — 2026-08-31 (Parser extraction)
+## Test session record — 2026-08-31 (tangent.parser.Parser extraction)
 
 Both test cases passed in order with Java 25.0.4 in an isolated `ui-test-parser-workspace` directory.
 

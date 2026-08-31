@@ -1,3 +1,7 @@
+package tangent.parser;
+
+import tangent.exception.TangentException;
+
 public enum CommandTypes {
     MARK("mark"),
     UNMARK("unmark"),
