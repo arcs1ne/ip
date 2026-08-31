@@ -31,6 +31,11 @@ public class Ui {
         return scanner.nextLine().trim();
     }
 
+    /** Displays an error message from the application. */
+    public void showError(String message) {
+        System.out.println(message);
+    }
+
     /** Displays the tasks currently stored in the task list. */
     public void showTaskList(TaskList tasks) {
         if (tasks.isEmpty()) {

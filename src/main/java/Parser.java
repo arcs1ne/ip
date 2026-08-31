@@ -15,9 +15,33 @@ public class Parser {
     private static final String FROM_MARKER = " /from ";
     private static final String TO_MARKER = " /to ";
 
-    /** Identifies the command represented by the first word of the user's input. */
-    public CommandTypes parseCommandType(String input) throws TangentException {
-        return CommandTypes.fromInput(input);
+    /**
+     * Converts a complete user command into the command object that performs its action.
+     */
+    public Command parse(String fullCommand, TaskList tasks) throws TangentException {
+        String[] inputs = fullCommand.split(" ", 2);
+        CommandTypes type = CommandTypes.fromInput(inputs[0]);
+        switch (type) {
+        case MARK:
+            return new MarkCommand(parseTaskIndex(inputs, tasks));
+        case UNMARK:
+            return new UnmarkCommand(parseTaskIndex(inputs, tasks));
+        case DELETE:
+            return new DeleteCommand(parseTaskIndex(inputs, tasks));
+        case TODO:
+        case DEADLINE:
+        case EVENT:
+            if (inputs.length < 2 || inputs[1].trim().isEmpty()) {
+                throw new TangentException("please provide a task description!");
+            }
+            return new AddCommand(parseTask(inputs[1], type));
+        case LIST:
+            return new ListCommand();
+        case BYE:
+            return new ExitCommand();
+        default:
+            throw new TangentException("invalid command!");
+        }
     }
 
     /** Validates a one-based task number and returns its zero-based index. */
