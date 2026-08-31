@@ -57,7 +57,9 @@ public class Tangent {
                                 System.out.println("please provide a task description!");
                                 System.out.println(DIVIDER);
                             } else {
-                                handleTask(parser.parseTask(inputs[1], commandTypes), tasks);
+                                Command addCommand = new AddCommand(parser.parseTask(inputs[1], commandTypes));
+                                addCommand.execute(tasks, ui, STORAGE);
+                                System.out.println(DIVIDER);
                             }
                             break;
 
@@ -87,25 +89,6 @@ public class Tangent {
                 }
             }
         }
-    }
-
-    /** Adds a validated task to the list, saves it, and displays the result. */
-    private static void handleTask(Task task, TaskList tasks) throws TangentException {
-        tasks.add(task);
-        try {
-            STORAGE.save(tasks.toList());
-        } catch (TangentException e) {
-            tasks.removeLast();
-            throw e;
-        }
-        System.out.println("got it! you have a new task: ");
-        System.out.println(task);
-        if (tasks.size() == 1) {
-            System.out.println("you now have 1 task in the list!");
-        } else {
-            System.out.println("you now have " + tasks.size() + " tasks in the list!");
-        }
-        System.out.println(DIVIDER);
     }
 
 }

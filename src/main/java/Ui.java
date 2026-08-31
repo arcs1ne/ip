@@ -67,4 +67,15 @@ public class Ui {
             System.out.println("you now have " + tasks.size() + " tasks in the list!");
         }
     }
+
+    /** Displays confirmation that a task was added and the current task count. */
+    public void showTaskAdded(Task task, TaskList tasks) {
+        System.out.println("got it! you have a new task: ");
+        System.out.println(task);
+        if (tasks.size() == 1) {
+            System.out.println("you now have 1 task in the list!");
+        } else {
+            System.out.println("you now have " + tasks.size() + " tasks in the list!");
+        }
+    }
 }
