@@ -54,4 +54,17 @@ public class Ui {
             System.out.println("i've marked it as undone!");
         }
     }
+
+    /** Displays confirmation that a task was removed and the remaining task count. */
+    public void showTaskDeleted(Task removedTask, TaskList tasks) {
+        System.out.println("got it! i've removed this task:");
+        System.out.println(removedTask);
+        if (tasks.isEmpty()) {
+            System.out.println("you now have no tasks in the list!");
+        } else if (tasks.size() == 1) {
+            System.out.println("you now have 1 task in the list!");
+        } else {
+            System.out.println("you now have " + tasks.size() + " tasks in the list!");
+        }
+    }
 }

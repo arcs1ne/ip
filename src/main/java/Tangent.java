@@ -45,22 +45,8 @@ public class Tangent {
 
                         case DELETE:
                             int delIdx = parser.parseTaskIndex(inputs, tasks);
-                            Task removedTask = tasks.remove(delIdx);
-                            try {
-                                STORAGE.save(tasks.toList());
-                            } catch (TangentException e) {
-                                tasks.add(delIdx, removedTask);
-                                throw e;
-                            }
-                            System.out.println("got it! i've removed this task:");
-                            System.out.println(removedTask);
-                            if (tasks.isEmpty()) {
-                                System.out.println("you now have no tasks in the list!");
-                            } else if (tasks.size() == 1) {
-                                System.out.println("you now have 1 task in the list!");
-                            } else {
-                                System.out.println("you now have " + tasks.size() + " tasks in the list!");
-                            }
+                            Command deleteCommand = new DeleteCommand(delIdx);
+                            deleteCommand.execute(tasks, ui, STORAGE);
                             System.out.println(DIVIDER);
                             break;
 
