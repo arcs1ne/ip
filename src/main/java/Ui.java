@@ -45,4 +45,13 @@ public class Ui {
     public void showGoodbye() {
         System.out.println("bye o/ hope to see you again soon");
     }
+
+    /** Displays confirmation that a task's completion status has changed. */
+    public void showTaskStatusChanged(boolean isDone) {
+        if (isDone) {
+            System.out.println("i've marked it as done!");
+        } else {
+            System.out.println("i've marked it as undone!");
+        }
+    }
 }

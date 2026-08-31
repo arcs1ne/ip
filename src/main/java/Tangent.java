@@ -31,13 +31,15 @@ public class Tangent {
                     switch (commandTypes) {
                         case MARK:
                             int markIdx = parser.parseTaskIndex(inputs, tasks);
-                            updateTaskStatus(tasks, markIdx, true);
+                            Command markCommand = new MarkCommand(markIdx);
+                            markCommand.execute(tasks, ui, STORAGE);
                             System.out.println(DIVIDER);
                             break;
 
                         case UNMARK:
                             int unmarkIdx = parser.parseTaskIndex(inputs, tasks);
-                            updateTaskStatus(tasks, unmarkIdx, false);
+                            Command unmarkCommand = new UnmarkCommand(unmarkIdx);
+                            unmarkCommand.execute(tasks, ui, STORAGE);
                             System.out.println(DIVIDER);
                             break;
 
@@ -98,36 +100,6 @@ public class Tangent {
                     System.out.println(DIVIDER);
                 }
             }
-        }
-    }
-
-    /**
-     * Marks a task as done or undone.
-     *
-     * @param tasks Task list containing the stored tasks.
-     * @param taskIndex The index of the task to operate on.
-     * @param isDone The current state of the task (done or undone).
-     */
-    private static void updateTaskStatus(TaskList tasks, int taskIndex, boolean isDone) throws TangentException {
-        Task task = tasks.get(taskIndex);
-        boolean wasDone = task.isDone();
-        if (isDone) {
-            task.markAsDone();
-        }
-        try {
-            STORAGE.save(tasks.toList());
-        } catch (TangentException e) {
-            if (wasDone) {
-                task.markAsDone();
-            } else {
-                task.markAsUndone();
-            }
-            throw e;
-        }
-        if (isDone) {
-            System.out.println("i've marked it as done!");
-        } else {
-            System.out.println("i've marked it as undone!");
         }
     }
 

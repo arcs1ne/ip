@@ -161,6 +161,42 @@ bye o/ hope to see you again soon
 ____________________________________________________________
 ```
 
+## Test case: unmark and reload status
+
+- **Aim:** Verify an unmarked task is saved as incomplete and reloads correctly.
+- **Inputs:**
+
+```text
+unmark 1
+list
+bye
+```
+
+- **Expected output:**
+
+```text
+____________________________________________________________
+████████╗ █████╗ ███╗   ██╗ ██████╗ ███████╗███╗   ██╗████████╗
+╚══██╔══╝██╔══██╗████╗  ██║██╔════╝ ██╔════╝████╗  ██║╚══██╔══╝
+   ██║   ███████║██╔██╗ ██║██║  ███╗█████╗  ██╔██╗ ██║   ██║
+   ██║   ██╔══██║██║╚██╗██║██║   ██║██╔══╝  ██║╚██╗██║   ██║
+   ██║   ██║  ██║██║ ╚████║╚██████╔╝███████╗██║ ╚████║   ██║
+   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚══════╝╚═╝  ╚═══╝   ╚═╝
+good morning/afternoon/evening ^-^ I'm TANGENT.
+what do you want me to do?
+____________________________________________________________
+____________________________________________________________
+i've marked it as undone!
+____________________________________________________________
+____________________________________________________________
+1. [D][ ] return book (by: Dec 02 2019, 6:00PM)
+2. [E][ ] project meeting (from: Dec 03 2019, 9:00AM to: Dec 03 2019, 11:00AM)
+____________________________________________________________
+____________________________________________________________
+bye o/ hope to see you again soon
+____________________________________________________________
+```
+
 ## Test session record — 2026-08-31 (Ui extraction)
 
 Both test cases passed in order with Java 25.0.4 in an isolated `ui-test-workspace` directory.
@@ -423,6 +459,86 @@ Exactly matched the complete expected-output block for this test case above.
 mark 2
 delete 1
 deadline impossible /by 31/2/2019 1800
+list
+bye
+```
+
+- **Expected output:**
+
+```text
+Exactly the complete expected-output block for this test case above.
+```
+
+- **Actual output:**
+
+```text
+Exactly matched the complete expected-output block for this test case above.
+```
+
+- **Result:** PASS
+
+## Test session record — 2026-08-31 (status command dispatch)
+
+All three test cases passed in order with Java 25.0.4 in an isolated `ui-test-command-status-final-workspace` directory.
+
+### Attempted test: create and list dated tasks
+
+- **Console input sent:**
+
+```text
+todo borrow book
+deadline return book /by 2/12/2019 1800
+event project meeting /from 3/12/2019 0900 /to 3/12/2019 1100
+list
+bye
+```
+
+- **Expected output:**
+
+```text
+Exactly the complete expected-output block for this test case above.
+```
+
+- **Actual output:**
+
+```text
+Exactly matched the complete expected-output block for this test case above.
+```
+
+- **Result:** PASS
+
+### Attempted test: reload and save mutations
+
+- **Console input sent:**
+
+```text
+mark 2
+delete 1
+deadline impossible /by 31/2/2019 1800
+list
+bye
+```
+
+- **Expected output:**
+
+```text
+Exactly the complete expected-output block for this test case above.
+```
+
+- **Actual output:**
+
+```text
+Exactly matched the complete expected-output block for this test case above.
+```
+
+- **Result:** PASS
+
+### Attempted test: unmark and reload status
+
+- **Console input sent:**
+
+```text
+unmark 1
 list
 bye
 ```
