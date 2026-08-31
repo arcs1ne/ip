@@ -1,5 +1,4 @@
 import java.util.Scanner;
-import java.util.ArrayList;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -17,9 +16,9 @@ public class Tangent {
         Ui ui = new Ui();
         ui.showWelcome();
 
-        ArrayList<Task> tasks;
+        TaskList tasks;
         try {
-            tasks = STORAGE.load();
+            tasks = new TaskList(STORAGE.load());
         } catch (TangentException e) {
             System.out.println(e.getMessage());
             return;
@@ -53,7 +52,7 @@ public class Tangent {
                             int delIdx = getTaskIndex(inputs, tasks);
                             Task removedTask = tasks.remove(delIdx);
                             try {
-                                STORAGE.save(tasks);
+                                STORAGE.save(tasks.toList());
                             } catch (TangentException e) {
                                 tasks.add(delIdx, removedTask);
                                 throw e;
@@ -114,11 +113,11 @@ public class Tangent {
      * If the input does not contain a valid index, an exception is thrown.
      *
      * @param inputs String array containing the command and the rest of the input from the user.
-     * @param tasks ArrayList of stored tasks.
+     * @param tasks Task list containing the stored tasks.
      * @return Index of the task to operate on
      * @throws TangentException if user provides a non-numeric index or 1 <= index <= tasks.size() is false.
      */
-    private static int getTaskIndex(String[] inputs, ArrayList<Task> tasks) throws TangentException {
+    private static int getTaskIndex(String[] inputs, TaskList tasks) throws TangentException {
         if (inputs.length < 2) {
             throw new TangentException("please provide a valid task number!");
         }
@@ -136,18 +135,18 @@ public class Tangent {
     /**
      * Marks a task as done or undone.
      *
-     * @param tasks ArrayList of stored tasks.
+     * @param tasks Task list containing the stored tasks.
      * @param taskIndex The index of the task to operate on.
      * @param isDone The current state of the task (done or undone).
      */
-    private static void updateTaskStatus(ArrayList<Task> tasks, int taskIndex, boolean isDone) throws TangentException {
+    private static void updateTaskStatus(TaskList tasks, int taskIndex, boolean isDone) throws TangentException {
         Task task = tasks.get(taskIndex);
         boolean wasDone = task.isDone();
         if (isDone) {
             task.markAsDone();
         }
         try {
-            STORAGE.save(tasks);
+            STORAGE.save(tasks.toList());
         } catch (TangentException e) {
             if (wasDone) {
                 task.markAsDone();
@@ -164,16 +163,16 @@ public class Tangent {
     }
 
     /**
-     * Adds a task of a specific type to the ArrayList of tasks.
+     * Adds a task of a specific type to the task list.
      * If the details of the task are not in the right format, an exception is thrown.
      *
      * @param details The rest of the user's input after the command.
-     * @param tasks ArrayList of stored tasks.
+     * @param tasks Task list containing the stored tasks.
      * @param type Type of Task to add: ToDo, Event or Deadline
      * @throws TangentException if user's input does not match the specified format.
      *
      */
-    private static void handleTask(String details, ArrayList<Task> tasks, CommandTypes type) throws TangentException {
+    private static void handleTask(String details, TaskList tasks, CommandTypes type) throws TangentException {
         Task t;
         final String byMarker = " /by ";
         final String fromMarker = " /from ";
@@ -234,7 +233,7 @@ public class Tangent {
         }
         tasks.add(t);
         try {
-            STORAGE.save(tasks);
+            STORAGE.save(tasks.toList());
         } catch (TangentException e) {
             tasks.removeLast();
             throw e;
