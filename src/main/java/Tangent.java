@@ -74,19 +74,19 @@ public class Tangent {
                             break;
 
                         case LIST:
-                            if (tasks.isEmpty()) {
-                                System.out.println("no tasks yet!");
-                            }
-                            for (int i = 0; i < tasks.size(); i++) {
-                                System.out.println((i + 1) + ". " + tasks.get(i));
-                            }
+                            Command listCommand = new ListCommand();
+                            listCommand.execute(tasks, ui, STORAGE);
                             System.out.println(DIVIDER);
                             continue;
 
                         case BYE:
-                            System.out.println("bye o/ hope to see you again soon");
+                            Command exitCommand = new ExitCommand();
+                            exitCommand.execute(tasks, ui, STORAGE);
                             System.out.println(DIVIDER);
-                            return;
+                            if (exitCommand.isExit()) {
+                                return;
+                            }
+                            break;
 
                         default:
                             System.out.println("invalid command!");

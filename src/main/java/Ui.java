@@ -30,4 +30,19 @@ public class Ui {
     public String readCommand(Scanner scanner) {
         return scanner.nextLine().trim();
     }
+
+    /** Displays the tasks currently stored in the task list. */
+    public void showTaskList(TaskList tasks) {
+        if (tasks.isEmpty()) {
+            System.out.println("no tasks yet!");
+        }
+        for (int i = 0; i < tasks.size(); i++) {
+            System.out.println((i + 1) + ". " + tasks.get(i));
+        }
+    }
+
+    /** Displays the farewell message shown when Tangent exits. */
+    public void showGoodbye() {
+        System.out.println("bye o/ hope to see you again soon");
+    }
 }
