@@ -73,20 +73,20 @@ public class Storage {
         }
         Task task;
         switch (data[0]) {
-        case "T":
-            requireFieldCount(data, 3, line);
-            task = new ToDo(data[2]);
-            break;
-        case "D":
-            requireFieldCount(data, 4, line);
-            task = new Deadline(data[2], parseFileDateTime(data[3]));
-            break;
-        case "E":
-            requireFieldCount(data, 5, line);
-            task = new Event(data[2], parseFileDateTime(data[3]), parseFileDateTime(data[4]));
-            break;
-        default:
-            throw new TangentException("data file contains an unknown task type: " + data[0]);
+            case "T":
+                requireFieldCount(data, 3, line);
+                task = new ToDo(data[2]);
+                break;
+            case "D":
+                requireFieldCount(data, 4, line);
+                task = new Deadline(data[2], parseFileDateTime(data[3]));
+                break;
+            case "E":
+                requireFieldCount(data, 5, line);
+                task = new Event(data[2], parseFileDateTime(data[3]), parseFileDateTime(data[4]));
+                break;
+            default:
+                throw new TangentException("data file contains an unknown task type: " + data[0]);
         }
         if (data[1].equals("1")) {
             task.markAsDone();
