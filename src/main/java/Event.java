@@ -15,6 +15,16 @@ public class Event extends Task {
         this.to = to;
     }
 
+    /** Returns the event start date and time for persistence. */
+    public LocalDateTime getFrom() {
+        return from;
+    }
+
+    /** Returns the event end date and time for persistence. */
+    public LocalDateTime getTo() {
+        return to;
+    }
+
     @Override
     public String toString() {
         return "[E]" + super.toString() + " (from: " + from.format(OUTPUT_FORMATTER) + " to: " + to.format(OUTPUT_FORMATTER) + ")";

@@ -13,7 +13,12 @@ public class Deadline extends Task {
         this.by = by;
     }
 
-    @Override 
+    /** Returns the deadline date and time for persistence. */
+    public LocalDateTime getBy() {
+        return by;
+    }
+
+    @Override
     public String toString() {
         return "[D]" + super.toString() + " (by: " + by.format(OUTPUT_FORMATTER) + ")";
     }

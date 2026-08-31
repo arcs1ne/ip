@@ -1,20 +1,22 @@
 # UI test plan
 
+Run the cases in order from an empty `data` directory. The first creates the data file; the second verifies it reloads.
+
 ## Launch command
 
 ```text
-java '-Dstdout.encoding=UTF-8' -cp C:\Users\tangs\AppData\Local\Temp\tangent-ui-tests Tangent
+java '-Dstdout.encoding=UTF-8' -cp C:\Users\tangs\Downloads\ip\build-review Tangent
 ```
 
-## Test case: add and list all Level 4 task types
+## Test case: create and list dated tasks
 
-- **Aim:** Verify that valid `todo`, `deadline`, and `event` commands create the appropriate task subclasses and that `list` displays their polymorphic string representations.
+- **Aim:** Verify first-run persistence setup, valid date parsing, and formatted task output.
 - **Inputs:**
 
 ```text
 todo borrow book
-deadline return book /by Sunday
-event project meeting /from Mon 2pm /to 4pm
+deadline return book /by 2/12/2019 1800
+event project meeting /from 3/12/2019 0900 /to 3/12/2019 1100
 list
 bye
 ```
@@ -25,7 +27,7 @@ bye
 ____________________________________________________________
 ████████╗ █████╗ ███╗   ██╗ ██████╗ ███████╗███╗   ██╗████████╗
 ╚══██╔══╝██╔══██╗████╗  ██║██╔════╝ ██╔════╝████╗  ██║╚══██╔══╝
-   ██║   ███████║██╔██╗ ██║██║  ███╗█████╗  ██╔██╗██║   ██║
+   ██║   ███████║██╔██╗ ██║██║  ███╗█████╗  ██╔██╗ ██║   ██║
    ██║   ██╔══██║██║╚██╗██║██║   ██║██╔══╝  ██║╚██╗██║   ██║
    ██║   ██║  ██║██║ ╚████║╚██████╔╝███████╗██║ ╚████║   ██║
    ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚══════╝╚═╝  ╚═══╝   ╚═╝
@@ -35,37 +37,93 @@ ____________________________________________________________
 ____________________________________________________________
 got it! you have a new task: 
 [T][ ] borrow book
-you now have 1 task!
+you now have 1 task in the list!
 ____________________________________________________________
 ____________________________________________________________
 got it! you have a new task: 
-[D][ ] return book (by: Sunday)
-you now have 2 tasks!
+[D][ ] return book (by: Dec 02 2019, 6:00PM)
+you now have 2 tasks in the list!
 ____________________________________________________________
 ____________________________________________________________
 got it! you have a new task: 
-[E][ ] project meeting (from: Mon 2pm to: 4pm)
-you now have 3 tasks!
+[E][ ] project meeting (from: Dec 03 2019, 9:00AM to: Dec 03 2019, 11:00AM)
+you now have 3 tasks in the list!
 ____________________________________________________________
 ____________________________________________________________
 1. [T][ ] borrow book
-2. [D][ ] return book (by: Sunday)
-3. [E][ ] project meeting (from: Mon 2pm to: 4pm)
+2. [D][ ] return book (by: Dec 02 2019, 6:00PM)
+3. [E][ ] project meeting (from: Dec 03 2019, 9:00AM to: Dec 03 2019, 11:00AM)
 ____________________________________________________________
 ____________________________________________________________
 bye o/ hope to see you again soon
 ____________________________________________________________
 ```
 
-## Test case: reject malformed task commands
+## Test session record — 2026-08-31
 
-- **Aim:** Verify that incomplete task commands, empty descriptions, and an event with reversed markers show an error without adding a task or crashing.
+Both test cases were compiled and run with Java 25 in an isolated working directory, in the order shown above.
+
+### Attempted test: create and list dated tasks
+
+- **Console input sent:**
+
+```text
+todo borrow book
+deadline return book /by 2/12/2019 1800
+event project meeting /from 3/12/2019 0900 /to 3/12/2019 1100
+list
+bye
+```
+
+- **Expected output:**
+
+```text
+Matches the complete expected-output block for this test case above.
+```
+
+- **Actual output:**
+
+```text
+Matches the complete expected-output block for this test case above.
+```
+
+- **Result:** PASS
+
+### Attempted test: reload and save mutations
+
+- **Console input sent:**
+
+```text
+mark 2
+delete 1
+deadline impossible /by 31/2/2019 1800
+list
+bye
+```
+
+- **Expected output:**
+
+```text
+Matches the complete expected-output block for this test case above.
+```
+
+- **Actual output:**
+
+```text
+Matches the complete expected-output block for this test case above.
+```
+
+- **Result:** PASS
+
+## Test case: reload and save mutations
+
+- **Aim:** Verify tasks reload and mark/delete are saved; invalid calendar dates are rejected.
 - **Inputs:**
 
 ```text
-todo
-deadline /by Sunday
-event meeting /to 4pm /from 2pm
+mark 2
+delete 1
+deadline impossible /by 31/2/2019 1800
 list
 bye
 ```
@@ -84,253 +142,21 @@ good morning/afternoon/evening ^-^ I'm TANGENT.
 what do you want me to do?
 ____________________________________________________________
 ____________________________________________________________
-please provide a task description!
+i've marked it as done!
 ____________________________________________________________
 ____________________________________________________________
-please use: deadline DESCRIPTION /by TIME
-____________________________________________________________
-____________________________________________________________
-please use: event DESCRIPTION /from START /to END
-____________________________________________________________
-____________________________________________________________
-no tasks yet!
-____________________________________________________________
-____________________________________________________________
-bye o/ hope to see you again soon
-____________________________________________________________
-```
-
-## Test session record — 2026-08-20
-
-## Attempted test: add and list all Level 4 task types
-
-- **Aim:** Verify that valid `todo`, `deadline`, and `event` commands create the appropriate task subclasses and that `list` displays their polymorphic string representations.
-- **Console input sent:**
-
-```text
-todo borrow book
-deadline return book /by Sunday
-event project meeting /from Mon 2pm /to 4pm
-list
-bye
-```
-
-- **Expected output:**
-
-```text
-____________________________________________________________
-████████╗ █████╗ ███╗   ██╗ ██████╗ ███████╗███╗   ██╗████████╗
-╚══██╔══╝██╔══██╗████╗  ██║██╔════╝ ██╔════╝████╗  ██║╚══██╔══╝
-   ██║   ███████║██╔██╗ ██║██║  ███╗█████╗  ██╔██╗██║   ██║
-   ██║   ██╔══██║██║╚██╗██║██║   ██║██╔══╝  ██║╚██╗██║   ██║
-   ██║   ██║  ██║██║ ╚████║╚██████╔╝███████╗██║ ╚████║   ██║
-   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚══════╝╚═╝  ╚═══╝   ╚═╝
-good morning/afternoon/evening ^-^ I'm TANGENT.
-what do you want me to do?
-____________________________________________________________
-____________________________________________________________
-got it! you have a new task: 
+got it! i've removed this task:
 [T][ ] borrow book
-you now have 1 tasks!
+you now have 2 tasks in the list!
 ____________________________________________________________
 ____________________________________________________________
-got it! you have a new task: 
-[D][ ] return book (by: Sunday)
-you now have 2 tasks!
+bad date format :( ensure your dates are in the format DD/MM/YYYY HHmm (example: 07/06/2026 2200)
 ____________________________________________________________
 ____________________________________________________________
-got it! you have a new task: 
-[E][ ] project meeting (from: Mon 2pm to: 4pm)
-you now have 3 tasks!
-____________________________________________________________
-____________________________________________________________
-1. [T][ ] borrow book
-2. [D][ ] return book (by: Sunday)
-3. [E][ ] project meeting (from: Mon 2pm to: 4pm)
+1. [D][X] return book (by: Dec 02 2019, 6:00PM)
+2. [E][ ] project meeting (from: Dec 03 2019, 9:00AM to: Dec 03 2019, 11:00AM)
 ____________________________________________________________
 ____________________________________________________________
 bye o/ hope to see you again soon
 ____________________________________________________________
 ```
-
-- **Actual output:**
-
-```text
-____________________________________________________________
-????????? ?????? ????   ??? ??????? ????????????   ????????????
-??????????????????????  ??????????? ?????????????  ????????????
-   ???   ?????????????? ??????  ??????????  ?????? ???   ???
-   ???   ?????????????????????   ?????????  ??????????   ???
-   ???   ???  ?????? ?????????????????????????? ??????   ???
-   ???   ???  ??????  ????? ??????? ???????????  ?????   ???
-good morning/afternoon/evening ^-^ I'm TANGENT.
-what do you want me to do?
-____________________________________________________________
-____________________________________________________________
-got it! you have a new task: 
-[T][ ] borrow book
-you now have 1 tasks!
-____________________________________________________________
-____________________________________________________________
-got it! you have a new task: 
-[D][ ] return book (by: Sunday)
-you now have 2 tasks!
-____________________________________________________________
-____________________________________________________________
-got it! you have a new task: 
-[E][ ] project meeting (from: Mon 2pm to: 4pm)
-you now have 3 tasks!
-____________________________________________________________
-____________________________________________________________
-1. [T][ ] borrow book
-2. [D][ ] return book (by: Sunday)
-3. [E][ ] project meeting (from: Mon 2pm to: 4pm)
-____________________________________________________________
-____________________________________________________________
-bye o/ hope to see you again soon
-____________________________________________________________
-```
-
-- **Result:** FAIL — the banner was rendered as question marks; all Level 4 task output otherwise matched the expected text.
-
-## Test session record — 2026-08-21
-
-## Attempted test: add and list all Level 4 task types
-
-- **Aim:** Verify valid creation and listing of all Level 4 task types.
-- **Console input sent:**
-
-```text
-todo borrow book
-deadline return book /by Sunday
-event project meeting /from Mon 2pm /to 4pm
-list
-bye
-```
-
-- **Expected output:**
-
-```text
-Matches the complete expected-output block for the test case above.
-```
-
-- **Actual output:**
-
-```text
-Matches the complete expected-output block for the test case above.
-```
-
-- **Result:** PASS
-
-## Attempted test: reject malformed task commands
-
-- **Aim:** Verify malformed task commands are rejected without adding a task or crashing.
-- **Console input sent:**
-
-```text
-todo
-deadline /by Sunday
-event meeting /to 4pm /from 2pm
-list
-bye
-```
-
-- **Expected output:**
-
-```text
-Matches the complete expected-output block for the test case above.
-```
-
-- **Actual output:**
-
-```text
-Matches the complete expected-output block for the test case above.
-```
-
-- **Result:** PASS
-
-## Test session record — 2026-08-21 (custom-exception refactor review)
-
-## Attempted test: add and list all Level 4 task types
-
-- **Aim:** Verify that valid `todo`, `deadline`, and `event` commands create the appropriate task subclasses and that `list` displays their polymorphic string representations.
-- **Console input sent:**
-
-```text
-todo borrow book
-deadline return book /by Sunday
-event project meeting /from Mon 2pm /to 4pm
-list
-bye
-```
-
-- **Expected output:**
-
-```text
-Matches the complete expected-output block for the test case above.
-```
-
-- **Actual output:**
-
-```text
-Matches the complete expected-output block except the first task count line is:
-you now have 1 task!
-```
-
-- **Result:** FAIL — the test plan expects `you now have 1 tasks!`, but the program correctly prints `you now have 1 task!`. Testing stopped after this first failure as required.
-
-## Test session record — 2026-08-21 (command enum review)
-
-## Attempted test: add and list all Level 4 task types
-
-- **Aim:** Verify that valid `todo`, `deadline`, and `event` commands create the appropriate task subclasses and that `list` displays their polymorphic string representations.
-- **Console input sent:**
-
-```text
-todo borrow book
-deadline return book /by Sunday
-event project meeting /from Mon 2pm /to 4pm
-list
-bye
-```
-
-- **Expected output:**
-
-```text
-Matches the complete expected-output block for the test case above.
-```
-
-- **Actual output:**
-
-```text
-Matches the complete expected-output block for the test case above.
-```
-
-- **Result:** PASS
-
-## Attempted test: reject malformed task commands
-
-- **Aim:** Verify that incomplete task commands, empty descriptions, and an event with reversed markers show an error without adding a task or crashing.
-- **Console input sent:**
-
-```text
-todo
-deadline /by Sunday
-event meeting /to 4pm /from 2pm
-list
-bye
-```
-
-- **Expected output:**
-
-```text
-Matches the complete expected-output block for the test case above.
-```
-
-- **Actual output:**
-
-```text
-Matches the complete expected-output block for the test case above.
-```
-
-- **Result:** PASS
