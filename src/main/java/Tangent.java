@@ -1,19 +1,15 @@
-import java.io.*;
 import java.util.Scanner;
 import java.util.ArrayList;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
-import java.util.List;
 
 public class Tangent {
     private static final DateTimeFormatter INPUT_FORMATTER = DateTimeFormatter
             .ofPattern("d/M/uuuu HHmm")
             .withResolverStyle(ResolverStyle.STRICT);
-    private static final Path DATA_FILE = Path.of("data", "tangent.txt");
+    private static final Storage STORAGE = new Storage("data/tangent.txt");
     private static final String FIELD_SEPARATOR = " | ";
     private static final String DIVIDER = "____________________________________________________________";
 
@@ -23,7 +19,7 @@ public class Tangent {
 
         ArrayList<Task> tasks;
         try {
-            tasks = initializeTasks();
+            tasks = STORAGE.load();
         } catch (TangentException e) {
             System.out.println(e.getMessage());
             return;
@@ -57,7 +53,7 @@ public class Tangent {
                             int delIdx = getTaskIndex(inputs, tasks);
                             Task removedTask = tasks.remove(delIdx);
                             try {
-                                saveTasks(tasks);
+                                STORAGE.save(tasks);
                             } catch (TangentException e) {
                                 tasks.add(delIdx, removedTask);
                                 throw e;
@@ -151,7 +147,7 @@ public class Tangent {
             task.markAsDone();
         }
         try {
-            saveTasks(tasks);
+            STORAGE.save(tasks);
         } catch (TangentException e) {
             if (wasDone) {
                 task.markAsDone();
@@ -238,7 +234,7 @@ public class Tangent {
         }
         tasks.add(t);
         try {
-            saveTasks(tasks);
+            STORAGE.save(tasks);
         } catch (TangentException e) {
             tasks.removeLast();
             throw e;
@@ -253,94 +249,9 @@ public class Tangent {
         System.out.println(DIVIDER);
     }
 
-    /** Initializes a list of tasks based on the text file in the hard disk.
-     * Creates a new folder and/or text file if it is not present..
-     *
-     * @throws TangentException if the file is not found or has formatting errors.
-     */
-    private static ArrayList<Task> initializeTasks() throws TangentException {
-        ArrayList<Task> tasks = new ArrayList<>();
-        try {
-            Files.createDirectories(DATA_FILE.getParent());
-            if (Files.notExists(DATA_FILE)) {
-                Files.createFile(DATA_FILE);
-            }
-            try (BufferedReader br = Files.newBufferedReader(DATA_FILE)) {
-                String line;
-                while ((line = br.readLine()) != null) {
-                    tasks.add(getTask(line));
-                }
-            }
-        } catch (IOException e) {
-            throw new TangentException("can't find the file :(");
-        }
-        return tasks;
-    }
-
-    private static Task getTask(String line) throws TangentException {
-        String[] data = line.split(" \\| ", -1);
-        if (data.length < 3 || (!data[1].equals("0") && !data[1].equals("1"))) {
-            throw new TangentException("data file contains an invalid task record: " + line);
-        }
-        Task t;
-        switch (data[0]) {
-        case "T":
-            requireFieldCount(data, 3, line);
-            t = new ToDo(data[2]);
-            break;
-        case "D":
-            requireFieldCount(data, 4, line);
-            t = new Deadline(data[2], parseDateTime(data[3]));
-            break;
-        case "E":
-            requireFieldCount(data, 5, line);
-            t = new Event(data[2], parseDateTime(data[3]), parseDateTime(data[4]));
-            break;
-        default:
-            throw new TangentException("data file contains an unknown task type: " + data[0]);
-        }
-        if (data[1].equals("1")) {
-            t.markAsDone();
-        }
-        return t;
-    }
-
-    private static void saveTasks(List<Task> tasks) throws TangentException {
-        List<String> records = new ArrayList<>();
-        for (Task task : tasks) {
-            records.add(toRecord(task));
-        }
-        try {
-            Files.write(DATA_FILE, records);
-        } catch (IOException e) {
-            throw new TangentException("unable to save your tasks :(");
-        }
-    }
-
-    private static String toRecord(Task task) {
-        String status = task.isDone() ? "1" : "0";
-        if (task instanceof ToDo) {
-            return "T" + FIELD_SEPARATOR + status + FIELD_SEPARATOR + task.getDescription();
-        }
-        if (task instanceof Deadline deadline) {
-            return "D" + FIELD_SEPARATOR + status + FIELD_SEPARATOR + task.getDescription()
-                    + FIELD_SEPARATOR + deadline.getBy().format(INPUT_FORMATTER);
-        }
-        Event event = (Event) task;
-        return "E" + FIELD_SEPARATOR + status + FIELD_SEPARATOR + task.getDescription()
-                + FIELD_SEPARATOR + event.getFrom().format(INPUT_FORMATTER)
-                + FIELD_SEPARATOR + event.getTo().format(INPUT_FORMATTER);
-    }
-
     private static void validateDescription(String description) throws TangentException {
         if (description.contains(FIELD_SEPARATOR)) {
             throw new TangentException("task descriptions cannot contain ' | '!");
-        }
-    }
-
-    private static void requireFieldCount(String[] data, int expectedCount, String line) throws TangentException {
-        if (data.length != expectedCount) {
-            throw new TangentException("data file contains an invalid task record: " + line);
         }
     }
 
