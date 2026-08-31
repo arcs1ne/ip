@@ -18,17 +18,8 @@ public class Tangent {
     private static final String DIVIDER = "____________________________________________________________";
 
     public static void main(String[] args) {
-        String banner = """
-                ████████╗ █████╗ ███╗   ██╗ ██████╗ ███████╗███╗   ██╗████████╗
-                ╚══██╔══╝██╔══██╗████╗  ██║██╔════╝ ██╔════╝████╗  ██║╚══██╔══╝
-                   ██║   ███████║██╔██╗ ██║██║  ███╗█████╗  ██╔██╗ ██║   ██║
-                   ██║   ██╔══██║██║╚██╗██║██║   ██║██╔══╝  ██║╚██╗██║   ██║
-                   ██║   ██║  ██║██║ ╚████║╚██████╔╝███████╗██║ ╚████║   ██║
-                   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚══════╝╚═╝  ╚═══╝   ╚═╝""";
-        System.out.println(DIVIDER);
-        System.out.println(banner);
-        System.out.println("good morning/afternoon/evening ^-^ I'm TANGENT.\nwhat do you want me to do?");
-        System.out.println(DIVIDER);
+        Ui ui = new Ui();
+        ui.showWelcome();
 
         ArrayList<Task> tasks;
         try {
@@ -39,7 +30,7 @@ public class Tangent {
         }
         try (Scanner scanner = new Scanner(System.in)) {
             while (scanner.hasNextLine()) {
-                String input = scanner.nextLine().trim();
+                String input = ui.readCommand(scanner);
                 System.out.println(DIVIDER);
                 if (input.isEmpty()) {
                     System.out.println("please enter a command or task description!");
