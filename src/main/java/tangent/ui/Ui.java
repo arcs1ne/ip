@@ -5,11 +5,11 @@ import tangent.task.TaskList;
 
 import java.util.Scanner;
 
-/**
- * Handles console input and shared messages shown to the user.
- */
+/** Handles console input and output messages. */
 public class Ui {
+    /** A line used to separate responses in the console. */
     private static final String DIVIDER = "____________________________________________________________";
+    /** The banner shown when loading up the program. */
     private static final String BANNER = """
             ████████╗ █████╗ ███╗   ██╗ ██████╗ ███████╗███╗   ██╗████████╗
             ╚══██╔══╝██╔══██╗████╗  ██║██╔════╝ ██╔════╝████╗  ██║╚══██╔══╝
@@ -18,7 +18,7 @@ public class Ui {
                ██║   ██║  ██║██║ ╚████║╚██████╔╝███████╗██║ ╚████║   ██║
                ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚══════╝╚═╝  ╚═══╝   ╚═╝""";
 
-    /** Displays the greeting shown when tangent.Tangent starts. */
+    /** Displays the greeting shown when the program starts. */
     public void showWelcome() {
         showDivider();
         System.out.println(BANNER);
@@ -41,7 +41,7 @@ public class Ui {
         System.out.println(message);
     }
 
-    /** Displays the tasks currently stored in the task list. */
+    /** Displays the tasks currently stored in the task list with 1-based indexing. */
     public void showTaskList(TaskList tasks) {
         if (tasks.isEmpty()) {
             System.out.println("no tasks yet!");
@@ -51,12 +51,16 @@ public class Ui {
         }
     }
 
-    /** Displays the farewell message shown when tangent.Tangent exits. */
+    /** Displays the farewell message shown when the program exits. */
     public void showGoodbye() {
         System.out.println("bye o/ hope to see you again soon");
     }
 
-    /** Displays confirmation that a task's completion status has changed. */
+    /**
+     * Displays confirmation that a task's completion status has changed.
+     *
+     * @param isDone whether the task was marked as done.
+     */
     public void showTaskStatusChanged(boolean isDone) {
         if (isDone) {
             System.out.println("i've marked it as done!");
@@ -65,7 +69,7 @@ public class Ui {
         }
     }
 
-    /** Displays confirmation that a task was removed and the remaining task count. */
+    /** Displays confirmation that a task was removed and displays the remaining task count. */
     public void showTaskDeleted(Task removedTask, TaskList tasks) {
         System.out.println("got it! i've removed this task:");
         System.out.println(removedTask);
@@ -78,7 +82,7 @@ public class Ui {
         }
     }
 
-    /** Displays confirmation that a task was added and the current task count. */
+    /** Displays confirmation that a task was added and displays the new task count. */
     public void showTaskAdded(Task task, TaskList tasks) {
         System.out.println("got it! you have a new task: ");
         System.out.println(task);

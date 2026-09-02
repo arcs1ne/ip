@@ -18,20 +18,27 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
 
-/**
- * Interprets and validates commands entered by the user.
- */
+/** Interprets and validates commands entered by the user. */
 public class Parser {
+    /** The specified format of the date the user inputs for {@code Event} and {@code Deadline} objects. */
     private static final DateTimeFormatter INPUT_FORMATTER = DateTimeFormatter
             .ofPattern("d/M/uuuu HHmm")
             .withResolverStyle(ResolverStyle.STRICT);
+    /** The separator to be used in the data file to separate the details of a task. */
     private static final String FIELD_SEPARATOR = " | ";
+    /** The marker to identify when a deadline should follow in a {@code Deadline} object. */
     private static final String BY_MARKER = " /by ";
+    /** The marker to identify when a start time should follow in an {@code Event} object. */
     private static final String FROM_MARKER = " /from ";
+    /** The marker to identify when an end time should follow in an {@code Event} object. */
     private static final String TO_MARKER = " /to ";
 
     /**
      * Converts a complete user command into the command object that performs its action.
+     *
+     * @param fullCommand The full response entered by the user.
+     * @throws TangentException if the command is not part of the recognised keywords for existing commands,
+     * or the task description is empty for {@code ToDo}, {@code Deadline} and {@code Event} objects.
      */
     public static Command parse(String fullCommand) throws TangentException {
         String[] inputs = fullCommand.split(" ", 2);
@@ -59,7 +66,13 @@ public class Parser {
         }
     }
 
-    /** Validates a one-based task number's format and returns its zero-based index. */
+    /**
+     * Validates a 1-based task index input and returns its 0-based index.
+     *
+     * @param inputs An array containing the command type followed by the rest of the user's command.
+     * @throws TangentException if a task number is not provided, an invalid task number is provided,
+     * or the task number is out of bounds.
+     */
     public static int parseTaskIndex(String[] inputs) throws TangentException {
         if (inputs.length < 2) {
             throw new TangentException("please provide a valid task number!");
@@ -75,23 +88,35 @@ public class Parser {
         }
     }
 
-    /** Creates a task from the details supplied after a task-creation command. */
+    /**
+     * Creates a new Task object based on the user's input.
+     *
+     * @param details The string that comes after the command type.
+     * @param type The command type parsed from the user's command.
+     * @return {@code ToDo}, {@code Deadline} or {@code Event} object corresponding to {@code type}.
+     * @throws TangentException if {@code type} cannot be understood or if {@code details} contains invalid characters,
+     * is not in the specified format, uses a wrong date format, or contains an end time earlier than its start time.
+     */
     public static Task parseTask(String details, CommandTypes type) throws TangentException {
         String description = details.trim();
         switch (type) {
-        case TODO:
-            validateDescription(description);
-            return new ToDo(description);
-        case DEADLINE:
-            return parseDeadline(details);
-        case EVENT:
-            return parseEvent(details);
-        default:
-            throw new TangentException("unknown task type!");
+            case TODO:
+                validateDescription(description);
+                return new ToDo(description);
+            case DEADLINE:
+                return parseDeadline(details);
+            case EVENT:
+                return parseEvent(details);
+            default:
+                throw new TangentException("unknown task type!");
         }
     }
 
-    /** Parses the description and due date for a deadline task. */
+    /**
+     * Creates a new {@code Deadline} object based on the description and the deadline given in {@code details}.
+     *
+     * @throws TangentException if the details are not in the correct format or contains an invalid date format.
+     */
     private static Deadline parseDeadline(String details) throws TangentException {
         int byIndex = details.indexOf(BY_MARKER);
         if (byIndex <= 0 || details.indexOf(BY_MARKER, byIndex + BY_MARKER.length()) != -1) {
@@ -106,7 +131,12 @@ public class Parser {
         return new Deadline(description, parseDateTime(by));
     }
 
-    /** Parses the description, start time, and end time for an event task. */
+    /**
+     * Creates a new {@code Event} object based on the description, start time and end time given in {@code details}.
+     *
+     * @throws TangentException if the details are not in the correct format, contains an invalid date format,
+     * or contains an end time that is earlier than its start time.
+     */
     private static Event parseEvent(String details) throws TangentException {
         int fromIndex = details.indexOf(FROM_MARKER);
         int toIndex = details.indexOf(TO_MARKER);
@@ -130,19 +160,28 @@ public class Parser {
         return new Event(description, fromDateTime, toDateTime);
     }
 
-    /** Rejects descriptions that cannot be safely stored in the record format. */
+    /**
+     * Ensures descriptions do not contain the {@code FIELD_SEPARATOR}.
+     *
+     * @throws TangentException if the description contains the {@code FIELD_SEPARATOR}.
+     */
     private static void validateDescription(String description) throws TangentException {
         if (description.contains(FIELD_SEPARATOR)) {
-            throw new TangentException("task descriptions cannot contain ' | '!");
+            throw new TangentException("task descriptions cannot contain " + FIELD_SEPARATOR + "!");
         }
     }
 
-    /** Parses a user-supplied date and time. */
+    /**
+     * Parses a user-supplied date and time.
+     *
+     * @throws TangentException if the provided date and time does not match the {@code INPUT_FORMATTER}.
+     */
     private static LocalDateTime parseDateTime(String input) throws TangentException {
         try {
             return LocalDateTime.parse(input.trim(), INPUT_FORMATTER);
         } catch (DateTimeParseException e) {
-            throw new TangentException("bad date format :( ensure your dates are in the format DD/MM/YYYY HHmm (example: 07/06/2026 2200)");
+            throw new TangentException("bad date format :( ensure your dates are in the format"
+                    + "DD/MM/YYYY HHmm (example: 07/06/2026 2200)");
         }
     }
 }
