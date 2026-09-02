@@ -11,7 +11,8 @@ public enum CommandTypes {
     DEADLINE("deadline"),
     EVENT("event"),
     LIST("list"),
-    BYE("bye");
+    BYE("bye"),
+    FIND("find");
 
     /** The term associated with the specific command type. */
     private final String keyword;

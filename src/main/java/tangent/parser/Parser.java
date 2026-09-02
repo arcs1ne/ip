@@ -11,6 +11,7 @@ import tangent.command.ExitCommand;
 import tangent.command.ListCommand;
 import tangent.command.MarkCommand;
 import tangent.command.UnmarkCommand;
+import tangent.command.FindCommand;
 import tangent.command.Command;
 import tangent.exception.TangentException;
 import tangent.task.Deadline;
@@ -48,6 +49,11 @@ public class Parser {
                 return new MarkCommand(parseTaskIndex(inputs));
             case UNMARK:
                 return new UnmarkCommand(parseTaskIndex(inputs));
+            case FIND:
+                if (inputs.length < 2 || inputs[1].trim().isEmpty()) {
+                    throw new TangentException("please provide a keyword to search for!");
+                }
+                return new FindCommand(inputs[1].trim());
             case DELETE:
                 return new DeleteCommand(parseTaskIndex(inputs));
             case TODO:

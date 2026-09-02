@@ -92,4 +92,19 @@ public class Ui {
             System.out.println("you now have " + tasks.size() + " tasks in the list!");
         }
     }
+
+    /**
+     * Displays all tasks matching the specified {@code keyword}, or a no-match message.
+     *
+     * @param keyword the keyword used for the search
+     * @param matches the matching tasks to display
+     */
+    public void showMatchingTasks(String keyword, TaskList matches) {
+        if (matches.isEmpty()) {
+            System.out.println("there were no matching tasks in the task list!");
+        } else {
+            System.out.println("here are the tasks matching the keyword " + keyword + ":");
+            showTaskList(matches);
+        }
+    }
 }
