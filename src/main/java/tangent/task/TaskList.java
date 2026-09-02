@@ -12,6 +12,11 @@ public class TaskList {
     /** The task list containing the tasks currently held in memory. */
     private final List<Task> tasks;
 
+    /** Creates an empty task list. */
+    public TaskList() {
+        this.tasks = new ArrayList<>();
+    }
+
     /** Creates a task list containing the supplied loaded tasks. */
     public TaskList(List<Task> tasks) {
         this.tasks = new ArrayList<>(tasks);
