@@ -1,5 +1,6 @@
 package tangent.storage;
 
+import tangent.Tangent;
 import tangent.exception.TangentException;
 import tangent.task.Deadline;
 import tangent.task.Event;
@@ -18,16 +19,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Loads tasks from, and saves tasks to, tangent.Tangent's data file.
+ * Loads tasks from and saves tasks to the data file specified by a file path.
  */
 public class Storage {
+    /**
+     * The specified format of the date to be stored in {@code dataFile}, ensuring that the parsed values are in range.
+     */
     private static final DateTimeFormatter FILE_DATE_FORMATTER = DateTimeFormatter
             .ofPattern("d/M/uuuu HHmm")
             .withResolverStyle(ResolverStyle.STRICT);
+    /** The separator to be used in the data file to separate the details of a task. */
     private static final String FIELD_SEPARATOR = " | ";
+    /** The path to the specified dataFile. */
     private final Path dataFile;
 
-    /** Creates storage backed by the data file at the given path. */
+    /**
+     * Creates a storage object backed by the data file at the given path.
+     *
+     * @param filePath The path of the file used to store tasks.
+     */
     public Storage(String filePath) {
         this.dataFile = Path.of(filePath);
     }
@@ -35,7 +45,7 @@ public class Storage {
     /**
      * Creates the data file if required, then returns every task stored in it.
      *
-     * @throws TangentException if the data file cannot be read or contains an invalid record
+     * @throws TangentException if the data file cannot be created, read or parsed.
      */
     public ArrayList<Task> load() throws TangentException {
         ArrayList<Task> tasks = new ArrayList<>();
@@ -57,9 +67,10 @@ public class Storage {
     }
 
     /**
-     * Saves every task as a record in the data file.
+     * Saves every task as a record in the data file by overwriting existing file contents.
      *
-     * @throws TangentException if the data file cannot be written
+     * @param tasks The list of tasks to save in the data file.
+     * @throws TangentException if the data file cannot be written to.
      */
     public void save(List<Task> tasks) throws TangentException {
         List<String> records = new ArrayList<>();
@@ -73,7 +84,11 @@ public class Storage {
         }
     }
 
-    /** Converts one saved record into its corresponding task. */
+    /**
+     * Converts one saved record into its corresponding task.
+     *
+     * @throws TangentException if the data file contains an invalid task record.
+     */
     private Task toTask(String line) throws TangentException {
         String[] data = line.split(" \\| ", -1);
         if (data.length < 3 || (!data[1].equals("0") && !data[1].equals("1"))) {
@@ -102,7 +117,9 @@ public class Storage {
         return task;
     }
 
-    /** Converts a task into one saved record. */
+    /**
+     * Converts a task into one saved record of the correct format in the data file.
+     */
     private String toRecord(Task task) {
         String status = task.isDone() ? "1" : "0";
         if (task instanceof ToDo) {
@@ -118,19 +135,30 @@ public class Storage {
                 + FIELD_SEPARATOR + event.getTo().format(FILE_DATE_FORMATTER);
     }
 
-    /** Checks that a saved record contains exactly its expected number of fields. */
+    /**
+     * Checks that a saved record contains exactly its expected number of fields.
+     * {@code ToDo} objects require 3 fields, {@code Deadline} objects require 4 fields
+     * and {@code Event} objects require 5 fields.
+     *
+     * @throws TangentException if the record does not exactly match the number of fields required.
+     */
     private void requireFieldCount(String[] data, int expectedCount, String line) throws TangentException {
         if (data.length != expectedCount) {
             throw new TangentException("data file contains an invalid task record: " + line);
         }
     }
 
-    /** Parses a date stored in the data file. */
+    /**
+     * Parses a date stored in the data file.
+     *
+     * @throws TangentException if the date stored in the data file does not match {@code FILE_DATE_FORMATTER}.
+     */
     private LocalDateTime parseFileDateTime(String input) throws TangentException {
         try {
             return LocalDateTime.parse(input.trim(), FILE_DATE_FORMATTER);
         } catch (DateTimeParseException e) {
-            throw new TangentException("bad date format :( ensure your dates are in the format DD/MM/YYYY HHmm (example: 07/06/2026 2200)");
+            throw new TangentException("bad date format :( ensure your dates are in the format "
+                    + "DD/MM/YYYY HHmm (example: 07/06/2026 2200)");
         }
     }
 }

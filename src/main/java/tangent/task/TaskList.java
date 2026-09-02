@@ -9,12 +9,8 @@ import java.util.List;
  * Owns the in-memory collection of tasks and its basic operations.
  */
 public class TaskList {
+    /** The task list containing the tasks currently held in memory. */
     private final List<Task> tasks;
-
-    /** Creates an empty task list. */
-    public TaskList() {
-        this.tasks = new ArrayList<>();
-    }
 
     /** Creates a task list containing the supplied loaded tasks. */
     public TaskList(List<Task> tasks) {
@@ -26,12 +22,12 @@ public class TaskList {
         tasks.add(task);
     }
 
-    /** Restores a task at its former position in this list. */
+    /** Adds a task at the specified 0-based index in this list. */
     public void add(int index, Task task) {
         tasks.add(index, task);
     }
 
-    /** Removes and returns the task at the specified zero-based index. */
+    /** Removes and returns the task at the specified 0-based index. */
     public Task remove(int index) {
         return tasks.remove(index);
     }
@@ -41,15 +37,15 @@ public class TaskList {
         return tasks.removeLast();
     }
 
-    /** Returns the task at the specified zero-based index. */
+    /** Returns the task at the specified 0-based index. */
     public Task get(int index) {
         return tasks.get(index);
     }
 
     /**
-     * Ensures the supplied zero-based index identifies a task in this list.
+     * Ensures the supplied zero-based index is valid for the given task list.
      *
-     * @throws TangentException if the index does not identify an existing task
+     * @throws TangentException if the index is out of bounds.
      */
     public void validateIndex(int index) throws TangentException {
         if (index < 0 || index >= tasks.size()) {
@@ -67,7 +63,7 @@ public class TaskList {
         return tasks.isEmpty();
     }
 
-    /** Returns a copy suitable for passing to persistence code. */
+    /** Returns a shallow copy of the current task list. */
     public List<Task> toList() {
         return new ArrayList<>(tasks);
     }

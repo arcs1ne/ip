@@ -9,18 +9,20 @@ import tangent.ui.Ui;
 
 import java.util.Scanner;
 
-/** Coordinates tangent.Tangent's UI, parsing, task list, and storage collaborators. */
+/** Coordinates Tangent's UI, parsing, task list, and storage. */
 public class Tangent {
+    /** A storage object that handles all interactions with the data file. */
     private final Storage storage;
+    /** A user interface object that handles all console responses. */
     private final Ui ui;
 
-    /** Creates tangent.Tangent using the supplied path for persistent task storage. */
+    /** Creates a new instance of Tangent using the supplied file path. */
     public Tangent(String filePath) {
         this.storage = new Storage(filePath);
         this.ui = new Ui();
     }
 
-    /** Runs tangent.Tangent's console command loop. */
+    /** Runs Tangent's console command loop. */
     public void run() {
         ui.showWelcome();
         TaskList tasks;
@@ -54,7 +56,7 @@ public class Tangent {
         }
     }
 
-    /** Starts tangent.Tangent with its default task data file. */
+    /** Starts Tangent with its default task data file. */
     public static void main(String[] args) {
         new Tangent("data/tangent.txt").run();
     }
