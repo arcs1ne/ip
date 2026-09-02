@@ -1,13 +1,13 @@
 package tangent;
 
+import java.util.Scanner;
+
 import tangent.command.Command;
 import tangent.exception.TangentException;
 import tangent.parser.Parser;
 import tangent.storage.Storage;
 import tangent.task.TaskList;
 import tangent.ui.Ui;
-
-import java.util.Scanner;
 
 /** Coordinates Tangent's UI, parsing, task list, and storage. */
 public class Tangent {
