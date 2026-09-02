@@ -10,7 +10,8 @@ public enum CommandTypes {
     DEADLINE("deadline"),
     EVENT("event"),
     LIST("list"),
-    BYE("bye");
+    BYE("bye"),
+    FIND("find");
 
     private final String keyword;
 
