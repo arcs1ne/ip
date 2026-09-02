@@ -1,5 +1,10 @@
 package tangent.parser;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
+
 import tangent.command.AddCommand;
 import tangent.command.DeleteCommand;
 import tangent.command.ExitCommand;
@@ -12,11 +17,6 @@ import tangent.task.Deadline;
 import tangent.task.Event;
 import tangent.task.Task;
 import tangent.task.ToDo;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.time.format.ResolverStyle;
 
 /** Interprets and validates commands entered by the user. */
 public class Parser {
