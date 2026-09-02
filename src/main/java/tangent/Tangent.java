@@ -13,13 +13,11 @@ import java.util.Scanner;
 public class Tangent {
     private final Storage storage;
     private final Ui ui;
-    private final Parser parser;
 
     /** Creates tangent.Tangent using the supplied path for persistent task storage. */
     public Tangent(String filePath) {
         this.storage = new Storage(filePath);
         this.ui = new Ui();
-        this.parser = new Parser();
     }
 
     /** Runs tangent.Tangent's console command loop. */
@@ -42,7 +40,7 @@ public class Tangent {
                     continue;
                 }
                 try {
-                    Command command = parser.parse(input, tasks);
+                    Command command = Parser.parse(input);
                     command.execute(tasks, ui, storage);
                     ui.showDivider();
                     if (command.isExit()) {

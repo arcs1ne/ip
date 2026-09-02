@@ -16,6 +16,7 @@ public class DeleteCommand extends Command {
 
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) throws TangentException {
+        tasks.validateIndex(taskIndex);
         Task removedTask = tasks.remove(taskIndex);
         try {
             storage.save(tasks.toList());

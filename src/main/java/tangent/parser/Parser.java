@@ -10,7 +10,6 @@ import tangent.command.Command;
 import tangent.exception.TangentException;
 import tangent.task.Deadline;
 import tangent.task.Event;
-import tangent.task.TaskList;
 import tangent.task.Task;
 import tangent.task.ToDo;
 
@@ -34,40 +33,40 @@ public class Parser {
     /**
      * Converts a complete user command into the command object that performs its action.
      */
-    public Command parse(String fullCommand, TaskList tasks) throws TangentException {
+    public static Command parse(String fullCommand) throws TangentException {
         String[] inputs = fullCommand.split(" ", 2);
         CommandTypes type = CommandTypes.fromInput(inputs[0]);
         switch (type) {
-        case MARK:
-            return new MarkCommand(parseTaskIndex(inputs, tasks));
-        case UNMARK:
-            return new UnmarkCommand(parseTaskIndex(inputs, tasks));
-        case DELETE:
-            return new DeleteCommand(parseTaskIndex(inputs, tasks));
-        case TODO:
-        case DEADLINE:
-        case EVENT:
-            if (inputs.length < 2 || inputs[1].trim().isEmpty()) {
-                throw new TangentException("please provide a task description!");
-            }
-            return new AddCommand(parseTask(inputs[1], type));
-        case LIST:
-            return new ListCommand();
-        case BYE:
-            return new ExitCommand();
-        default:
-            throw new TangentException("invalid command!");
+            case MARK:
+                return new MarkCommand(parseTaskIndex(inputs));
+            case UNMARK:
+                return new UnmarkCommand(parseTaskIndex(inputs));
+            case DELETE:
+                return new DeleteCommand(parseTaskIndex(inputs));
+            case TODO:
+            case DEADLINE:
+            case EVENT:
+                if (inputs.length < 2 || inputs[1].trim().isEmpty()) {
+                    throw new TangentException("please provide a task description!");
+                }
+                return new AddCommand(parseTask(inputs[1], type));
+            case LIST:
+                return new ListCommand();
+            case BYE:
+                return new ExitCommand();
+            default:
+                throw new TangentException("invalid command!");
         }
     }
 
-    /** Validates a one-based task number and returns its zero-based index. */
-    public int parseTaskIndex(String[] inputs, TaskList tasks) throws TangentException {
+    /** Validates a one-based task number's format and returns its zero-based index. */
+    public static int parseTaskIndex(String[] inputs) throws TangentException {
         if (inputs.length < 2) {
             throw new TangentException("please provide a valid task number!");
         }
         try {
             int taskIndex = Integer.parseInt(inputs[1]) - 1;
-            if (taskIndex < 0 || taskIndex >= tasks.size()) {
+            if (taskIndex < 0) {
                 throw new TangentException("please provide a valid task number!");
             }
             return taskIndex;
@@ -77,7 +76,7 @@ public class Parser {
     }
 
     /** Creates a task from the details supplied after a task-creation command. */
-    public Task parseTask(String details, CommandTypes type) throws TangentException {
+    public static Task parseTask(String details, CommandTypes type) throws TangentException {
         String description = details.trim();
         switch (type) {
         case TODO:
@@ -93,7 +92,7 @@ public class Parser {
     }
 
     /** Parses the description and due date for a deadline task. */
-    private Deadline parseDeadline(String details) throws TangentException {
+    private static Deadline parseDeadline(String details) throws TangentException {
         int byIndex = details.indexOf(BY_MARKER);
         if (byIndex <= 0 || details.indexOf(BY_MARKER, byIndex + BY_MARKER.length()) != -1) {
             throw new TangentException("please use: deadline DESCRIPTION /by TIME");
@@ -108,7 +107,7 @@ public class Parser {
     }
 
     /** Parses the description, start time, and end time for an event task. */
-    private Event parseEvent(String details) throws TangentException {
+    private static Event parseEvent(String details) throws TangentException {
         int fromIndex = details.indexOf(FROM_MARKER);
         int toIndex = details.indexOf(TO_MARKER);
         if (fromIndex <= 0 || toIndex <= fromIndex
@@ -132,14 +131,14 @@ public class Parser {
     }
 
     /** Rejects descriptions that cannot be safely stored in the record format. */
-    private void validateDescription(String description) throws TangentException {
+    private static void validateDescription(String description) throws TangentException {
         if (description.contains(FIELD_SEPARATOR)) {
             throw new TangentException("task descriptions cannot contain ' | '!");
         }
     }
 
     /** Parses a user-supplied date and time. */
-    private LocalDateTime parseDateTime(String input) throws TangentException {
+    private static LocalDateTime parseDateTime(String input) throws TangentException {
         try {
             return LocalDateTime.parse(input.trim(), INPUT_FORMATTER);
         } catch (DateTimeParseException e) {

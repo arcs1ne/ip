@@ -89,6 +89,86 @@ Matches the complete expected-output block for this test case above.
 
 - **Result:** PASS
 
+## Test session record — 2026-09-01 (parser refactor)
+
+All three test cases passed in order with Java 25.0.4 in an isolated `ui-test-parser-refactor-workspace` directory. The actual output for each case exactly matched its complete expected-output block above.
+
+### Attempted test: create and list dated tasks
+
+- **Console input sent:**
+
+```text
+todo borrow book
+deadline return book /by 2/12/2019 1800
+event project meeting /from 3/12/2019 0900 /to 3/12/2019 1100
+list
+bye
+```
+
+- **Expected output:**
+
+```text
+Exactly the complete expected-output block for this test case above.
+```
+
+- **Actual output:**
+
+```text
+Exactly matched the complete expected-output block for this test case above.
+```
+
+- **Result:** PASS
+
+### Attempted test: reload and save mutations
+
+- **Console input sent:**
+
+```text
+mark 2
+delete 1
+deadline impossible /by 31/2/2019 1800
+list
+bye
+```
+
+- **Expected output:**
+
+```text
+Exactly the complete expected-output block for this test case above.
+```
+
+- **Actual output:**
+
+```text
+Exactly matched the complete expected-output block for this test case above.
+```
+
+- **Result:** PASS
+
+### Attempted test: unmark and reload status
+
+- **Console input sent:**
+
+```text
+unmark 1
+list
+bye
+```
+
+- **Expected output:**
+
+```text
+Exactly the complete expected-output block for this test case above.
+```
+
+- **Actual output:**
+
+```text
+Exactly matched the complete expected-output block for this test case above.
+```
+
+- **Result:** PASS
+
 ### Attempted test: reload and save mutations
 
 - **Console input sent:**

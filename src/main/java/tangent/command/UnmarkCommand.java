@@ -17,6 +17,7 @@ public class UnmarkCommand extends Command {
 
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) throws TangentException {
+        tasks.validateIndex(taskIndex);
         Task task = tasks.get(taskIndex);
         boolean wasDone = task.isDone();
         task.markAsUndone();

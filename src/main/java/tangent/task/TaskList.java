@@ -1,5 +1,7 @@
 package tangent.task;
 
+import tangent.exception.TangentException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +44,17 @@ public class TaskList {
     /** Returns the task at the specified zero-based index. */
     public Task get(int index) {
         return tasks.get(index);
+    }
+
+    /**
+     * Ensures the supplied zero-based index identifies a task in this list.
+     *
+     * @throws TangentException if the index does not identify an existing task
+     */
+    public void validateIndex(int index) throws TangentException {
+        if (index < 0 || index >= tasks.size()) {
+            throw new TangentException("please provide a valid task number!");
+        }
     }
 
     /** Returns the number of tasks in this list. */

@@ -17,6 +17,7 @@ public class MarkCommand extends Command {
 
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) throws TangentException {
+        tasks.validateIndex(taskIndex);
         updateTaskStatus(tasks, true, storage);
         ui.showTaskStatusChanged(true);
     }
