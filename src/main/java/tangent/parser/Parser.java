@@ -6,13 +6,13 @@ import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
 
 import tangent.command.AddCommand;
+import tangent.command.Command;
 import tangent.command.DeleteCommand;
 import tangent.command.ExitCommand;
+import tangent.command.FindCommand;
 import tangent.command.ListCommand;
 import tangent.command.MarkCommand;
 import tangent.command.UnmarkCommand;
-import tangent.command.FindCommand;
-import tangent.command.Command;
 import tangent.exception.TangentException;
 import tangent.task.Deadline;
 import tangent.task.Event;
@@ -39,7 +39,7 @@ public class Parser {
      *
      * @param fullCommand The full response entered by the user.
      * @throws TangentException if the command is not part of the recognised keywords for existing commands,
-     * or the task description is empty for {@code ToDo}, {@code Deadline} and {@code Event} objects.
+     *     or the task description is empty for {@code ToDo}, {@code Deadline} and {@code Event} objects.
      */
     public static Command parse(String fullCommand) throws TangentException {
         String[] inputs = fullCommand.split(" ", 2);
@@ -77,7 +77,7 @@ public class Parser {
      *
      * @param inputs An array containing the command type followed by the rest of the user's command.
      * @throws TangentException if a task number is not provided, an invalid task number is provided,
-     * or the task number is out of bounds.
+     *     or the task number is out of bounds.
      */
     public static int parseTaskIndex(String[] inputs) throws TangentException {
         if (inputs.length < 2) {
@@ -101,7 +101,7 @@ public class Parser {
      * @param type The command type parsed from the user's command.
      * @return {@code ToDo}, {@code Deadline} or {@code Event} object corresponding to {@code type}.
      * @throws TangentException if {@code type} cannot be understood or if {@code details} contains invalid characters,
-     * is not in the specified format, uses a wrong date format, or contains an end time earlier than its start time.
+     *     is not in the correct format, uses a wrong date format, or contains an end time earlier than its start time.
      */
     public static Task parseTask(String details, CommandTypes type) throws TangentException {
         String description = details.trim();
@@ -141,7 +141,7 @@ public class Parser {
      * Creates a new {@code Event} object based on the description, start time and end time given in {@code details}.
      *
      * @throws TangentException if the details are not in the correct format, contains an invalid date format,
-     * or contains an end time that is earlier than its start time.
+     *     or contains an end time that is earlier than its start time.
      */
     private static Event parseEvent(String details) throws TangentException {
         int fromIndex = details.indexOf(FROM_MARKER);

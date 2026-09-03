@@ -1,9 +1,9 @@
 package tangent.task;
 
-import tangent.exception.TangentException;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import tangent.exception.TangentException;
 
 /**
  * Owns the in-memory collection of tasks and its basic operations.

@@ -1,9 +1,9 @@
 package tangent.ui;
 
+import java.util.Scanner;
+
 import tangent.task.Task;
 import tangent.task.TaskList;
-
-import java.util.Scanner;
 
 /** Handles console input and output messages. */
 public class Ui {

@@ -1,12 +1,21 @@
 package tangent.parser;
 
-import org.junit.jupiter.api.Test;
-import tangent.command.*;
-import tangent.exception.TangentException;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.Test;
+
+import tangent.command.AddCommand;
+import tangent.command.DeleteCommand;
+import tangent.command.ExitCommand;
+import tangent.command.FindCommand;
+import tangent.command.ListCommand;
+import tangent.command.MarkCommand;
+import tangent.command.UnmarkCommand;
+import tangent.exception.TangentException;
+
+
 
 /** Tests that the parser creates commands without relying on application state. */
 public class ParserTest {

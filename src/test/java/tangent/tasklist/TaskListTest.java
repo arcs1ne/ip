@@ -1,11 +1,12 @@
 package tangent.tasklist;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.Test;
+
 import tangent.task.Task;
 import tangent.task.TaskList;
 import tangent.task.ToDo;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TaskListTest {
     @Test
