@@ -22,6 +22,11 @@ public class TaskList {
         this.tasks = new ArrayList<>(tasks);
     }
 
+    /** Creates a task list containing the supplied tasks */
+    public TaskList(Task... tasks) {
+        this.tasks = new ArrayList<>(List.of(tasks));
+    }
+
     /** Adds a task to the end of this list. */
     public void add(Task task) {
         tasks.add(task);
