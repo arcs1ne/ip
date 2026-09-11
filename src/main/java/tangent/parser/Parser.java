@@ -33,6 +33,10 @@ public class Parser {
     private static final String FROM_MARKER = " /from ";
     /** The marker to identify when an end time should follow in an {@code Event} object. */
     private static final String TO_MARKER = " /to ";
+    private static final String DEADLINE_FORMAT_MESSAGE = "please use: deadline DESCRIPTION /by TIME";
+    private static final String EVENT_FORMAT_MESSAGE = "please use: event DESCRIPTION /from START /to END";
+    private static final String BAD_DATE_MESSAGE = "bad date format :( ensure your dates are in the format "
+            + "DD/MM/YYYY HHmm (example: 07/06/2026 2200)";
 
     /**
      * Converts a complete user command into the command object that performs its action.
@@ -51,18 +55,14 @@ public class Parser {
             case UNMARK:
                 return new UnmarkCommand(parseTaskIndex(inputs));
             case FIND:
-                if (inputs.length < 2 || inputs[1].trim().isEmpty()) {
-                    throw new TangentException("please provide a keyword to search for!");
-                }
+                requireArgument(inputs, "please provide a keyword to search for!");
                 return new FindCommand(inputs[1].trim());
             case DELETE:
                 return new DeleteCommand(parseTaskIndex(inputs));
             case TODO:
             case DEADLINE:
             case EVENT:
-                if (inputs.length < 2 || inputs[1].trim().isEmpty()) {
-                    throw new TangentException("please provide a task description!");
-                }
+                requireArgument(inputs, "please provide a task description!");
                 return new AddCommand(parseTask(inputs[1], type));
             case LIST:
                 return new ListCommand();
@@ -70,6 +70,13 @@ public class Parser {
                 return new ExitCommand();
             default:
                 throw new TangentException("invalid command!");
+        }
+    }
+
+    /** Ensures a command has non-empty text after its keyword. */
+    private static void requireArgument(String[] inputs, String errorMessage) throws TangentException {
+        if (inputs.length < 2 || inputs[1].trim().isEmpty()) {
+            throw new TangentException(errorMessage);
         }
     }
 
@@ -129,12 +136,12 @@ public class Parser {
     private static Deadline parseDeadline(String details) throws TangentException {
         int byIndex = details.indexOf(BY_MARKER);
         if (byIndex <= 0 || details.indexOf(BY_MARKER, byIndex + BY_MARKER.length()) != -1) {
-            throw new TangentException("please use: deadline DESCRIPTION /by TIME");
+            throw new TangentException(DEADLINE_FORMAT_MESSAGE);
         }
         String description = details.substring(0, byIndex).trim();
         String by = details.substring(byIndex + BY_MARKER.length()).trim();
         if (description.isEmpty() || by.isEmpty()) {
-            throw new TangentException("please use: deadline DESCRIPTION /by TIME");
+            throw new TangentException(DEADLINE_FORMAT_MESSAGE);
         }
         validateDescription(description);
         return new Deadline(description, parseDateTime(by));
@@ -149,16 +156,19 @@ public class Parser {
     private static Event parseEvent(String details) throws TangentException {
         int fromIndex = details.indexOf(FROM_MARKER);
         int toIndex = details.indexOf(TO_MARKER);
-        if (fromIndex <= 0 || toIndex <= fromIndex
-                || details.indexOf(FROM_MARKER, fromIndex + FROM_MARKER.length()) != -1
-                || details.indexOf(TO_MARKER, toIndex + TO_MARKER.length()) != -1) {
-            throw new TangentException("please use: event DESCRIPTION /from START /to END");
+        boolean hasValidMarkerOrder = fromIndex > 0 && toIndex > fromIndex;
+        boolean hasRepeatedFromMarker = details.indexOf(FROM_MARKER,
+                fromIndex + FROM_MARKER.length()) != -1;
+        boolean hasRepeatedToMarker = details.indexOf(TO_MARKER,
+                toIndex + TO_MARKER.length()) != -1;
+        if (!hasValidMarkerOrder || hasRepeatedFromMarker || hasRepeatedToMarker) {
+            throw new TangentException(EVENT_FORMAT_MESSAGE);
         }
         String description = details.substring(0, fromIndex).trim();
         String from = details.substring(fromIndex + FROM_MARKER.length(), toIndex).trim();
         String to = details.substring(toIndex + TO_MARKER.length()).trim();
         if (description.isEmpty() || from.isEmpty() || to.isEmpty()) {
-            throw new TangentException("please use: event DESCRIPTION /from START /to END");
+            throw new TangentException(EVENT_FORMAT_MESSAGE);
         }
         validateDescription(description);
         LocalDateTime fromDateTime = parseDateTime(from);
@@ -189,8 +199,7 @@ public class Parser {
         try {
             return LocalDateTime.parse(input.trim(), INPUT_FORMATTER);
         } catch (DateTimeParseException e) {
-            throw new TangentException("bad date format :( ensure your dates are in the format "
-                    + "DD/MM/YYYY HHmm (example: 07/06/2026 2200)");
+            throw new TangentException(BAD_DATE_MESSAGE);
         }
     }
 }

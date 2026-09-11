@@ -91,24 +91,14 @@ public class Ui {
     public void showTaskDeleted(Task removedTask, TaskList tasks) {
         display("got it! i've removed this task:");
         display(removedTask.toString());
-        if (tasks.isEmpty()) {
-            display("you now have no tasks in the list!");
-        } else if (tasks.size() == 1) {
-            display("you now have 1 task in the list!");
-        } else {
-            display("you now have " + tasks.size() + " tasks in the list!");
-        }
+        display(formatTaskCount(tasks));
     }
 
     /** Displays confirmation that a task was added and displays the new task count. */
     public void showTaskAdded(Task task, TaskList tasks) {
         display("got it! you have a new task: ");
         display(task.toString());
-        if (tasks.size() == 1) {
-            display("you now have 1 task in the list!");
-        } else {
-            display("you now have " + tasks.size() + " tasks in the list!");
-        }
+        display(formatTaskCount(tasks));
     }
 
     /**
@@ -124,6 +114,17 @@ public class Ui {
             display("here are the tasks matching the keyword " + keyword + ":");
             showTaskList(matches);
         }
+    }
+
+    /** Formats the task-count confirmation after adding or deleting a task. */
+    private String formatTaskCount(TaskList tasks) {
+        if (tasks.isEmpty()) {
+            return "you now have no tasks in the list!";
+        }
+        if (tasks.size() == 1) {
+            return "you now have 1 task in the list!";
+        }
+        return "you now have " + tasks.size() + " tasks in the list!";
     }
 
     /** Sends one formatted message to configured output handler. */
