@@ -5,6 +5,7 @@ import java.io.IOException;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import tangent.Tangent;
@@ -21,9 +22,11 @@ public class Main extends Application {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("/view/MainWindow.fxml"));
             AnchorPane ap = fxmlLoader.load();
+            Image icon = new Image(this.getClass().getResourceAsStream("/images/logo.png"));
             Scene scene = new Scene(ap);
             stage.setScene(scene);
             stage.setTitle("Tangent");
+            stage.getIcons().add(icon);
             fxmlLoader.<MainWindow>getController().setTangent(tangent);
             stage.show();
         } catch (IOException e) {
