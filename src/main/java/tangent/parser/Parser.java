@@ -42,6 +42,7 @@ public class Parser {
      *     or the task description is empty for {@code ToDo}, {@code Deadline} and {@code Event} objects.
      */
     public static Command parse(String fullCommand) throws TangentException {
+        assert fullCommand != null : "command input must exist";
         String[] inputs = fullCommand.split(" ", 2);
         CommandTypes type = CommandTypes.fromInput(inputs[0]);
         switch (type) {
@@ -104,6 +105,8 @@ public class Parser {
      *     is not in the correct format, uses a wrong date format, or contains an end time earlier than its start time.
      */
     public static Task parseTask(String details, CommandTypes type) throws TangentException {
+        assert details != null : "task details must exist";
+        assert type != null : "task type must exist";
         String description = details.trim();
         switch (type) {
             case TODO:
