@@ -2,6 +2,7 @@ package tangent.task;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import tangent.exception.TangentException;
 
@@ -81,9 +82,9 @@ public class TaskList {
     /** Returns a list of tasks with descriptions containing the {@code keyword} (case-insensitive). */
     public TaskList find(String keyword) {
         TaskList matchingTasks = new TaskList();
-        String normalizedKeyword = keyword.toLowerCase();
+        String normalizedKeyword = keyword.toLowerCase(Locale.ROOT);
         for (Task task : tasks) {
-            if (task.getDescription().toLowerCase().contains(normalizedKeyword)) {
+            if (task.getDescription().toLowerCase(Locale.ROOT).contains(normalizedKeyword)) {
                 matchingTasks.add(task);
             }
         }

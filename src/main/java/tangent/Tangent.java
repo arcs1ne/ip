@@ -55,7 +55,7 @@ public class Tangent {
         }
         try {
             Command command = Parser.parse(input);
-            command.execute(tasks, ui, storage);
+            executeCommand(command, ui);
             ui.showDivider();
             return command.isExit();
         } catch (TangentException e) {
@@ -81,7 +81,7 @@ public class Tangent {
                 return;
             }
             Command command = Parser.parse(input.trim());
-            command.execute(tasks, commandUi, storage);
+            executeCommand(command, commandUi);
             exitRequested = command.isExit();
         } catch (TangentException e) {
             commandUi.showError(e.getMessage());
@@ -91,6 +91,11 @@ public class Tangent {
     /** Returns whether GUI should close after the most recent command. */
     public boolean isExitRequested() {
         return exitRequested;
+    }
+
+    /** Executes a parsed command with shared application state. */
+    private void executeCommand(Command command, Ui commandUi) throws TangentException {
+        command.execute(tasks, commandUi, storage);
     }
 
     /** Loads the saved tasks into a new task list. */
