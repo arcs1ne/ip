@@ -70,6 +70,16 @@ public class Tangent {
         new Tangent("data/tangent.txt").run();
     }
 
+    /** Returns whether GUI should close after the most recent command. */
+    public boolean isExitRequested() {
+        return exitRequested;
+    }
+
+    /** Executes a parsed command with shared application state. */
+    private void executeCommand(Command command, Ui commandUi) throws TangentException {
+        command.execute(tasks, commandUi, storage);
+    }
+
     /** Executes one command using the supplied UI output handler. */
     public void executeCommand(String input, Ui commandUi) {
         assert input != null : "command input must exist";
@@ -88,16 +98,6 @@ public class Tangent {
         } catch (TangentException e) {
             commandUi.showError(e.getMessage());
         }
-    }
-
-    /** Returns whether GUI should close after the most recent command. */
-    public boolean isExitRequested() {
-        return exitRequested;
-    }
-
-    /** Executes a parsed command with shared application state. */
-    private void executeCommand(Command command, Ui commandUi) throws TangentException {
-        command.execute(tasks, commandUi, storage);
     }
 
     /** Loads the saved tasks into a new task list. */
