@@ -89,6 +89,30 @@ Matches the complete expected-output block for this test case above.
 
 - **Result:** PASS
 
+## Test session record — 2026-09-11 (storage format constants)
+
+Java 25.0.4 direct compilation of console sources + first planned case passed in isolated `ui-test-storage-constants-workspace`.
+
+- **Actual output:**
+
+```text
+Application exited with code 0 after creating and listing ToDo, Deadline, and Event records.
+```
+
+- **Result:** PASS
+
+## Test session record — 2026-09-11 (TaskList.find normalization)
+
+Java 25.0.4 direct compilation of console sources + focused find scenario passed in isolated `ui-test-tasklist-find-workspace`.
+
+- **Actual output:**
+
+```text
+Application exited with code 0 and returned matching task for case-insensitive FIND command.
+```
+
+- **Result:** PASS
+
 ## Test session record — 2026-09-01 (parser refactor)
 
 All three test cases passed in order with Java 25.0.4 in an isolated `ui-test-parser-refactor-workspace` directory. The actual output for each case exactly matched its complete expected-output block above.

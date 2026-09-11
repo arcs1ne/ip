@@ -81,9 +81,10 @@ public class TaskList {
     /** Returns a list of tasks with descriptions containing the {@code keyword} (case-insensitive). */
     public TaskList find(String keyword) {
         TaskList matchingTasks = new TaskList();
-        for (Task t: tasks) {
-            if (t.getDescription().toLowerCase().contains(keyword.toLowerCase())) {
-                matchingTasks.add(t);
+        String normalizedKeyword = keyword.toLowerCase();
+        for (Task task : tasks) {
+            if (task.getDescription().toLowerCase().contains(normalizedKeyword)) {
+                matchingTasks.add(task);
             }
         }
         return matchingTasks;
