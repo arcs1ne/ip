@@ -140,6 +140,7 @@ public class Storage {
             return DEADLINE_TYPE + FIELD_SEPARATOR + status + FIELD_SEPARATOR + task.getDescription()
                     + FIELD_SEPARATOR + deadline.getBy().format(FILE_DATE_FORMATTER);
         }
+        assert task instanceof Event : "task must be ToDo, Deadline, or Event";
         Event event = (Event) task;
         return EVENT_TYPE + FIELD_SEPARATOR + status + FIELD_SEPARATOR + task.getDescription()
                 + FIELD_SEPARATOR + event.getFrom().format(FILE_DATE_FORMATTER)

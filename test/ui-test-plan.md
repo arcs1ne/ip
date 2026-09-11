@@ -173,6 +173,32 @@ Application exited with code 0; dated tasks, FIND, mark, unmark, delete, and exi
 
 - **Result:** PASS
 
+## Test session record — 2026-09-11 (parseEvent readability refactor)
+
+Java 25.0.4 direct compilation of console sources + both planned cases passed in isolated `ui-test-code-quality-workspace`.
+
+### Attempted tests: create/list + reload/save mutations
+
+- **Console input sent:**
+
+```text
+The exact inputs from the two planned test cases above, run in order.
+```
+
+- **Expected output:**
+
+```text
+The complete expected-output blocks from the corresponding planned test cases above.
+```
+
+- **Actual output:**
+
+```text
+Both cases matched their expected behavior; processes exited with code 0.
+```
+
+- **Result:** PASS (2 cases)
+
 ## Test session record — 2026-09-01 (parser refactor)
 
 All three test cases passed in order with Java 25.0.4 in an isolated `ui-test-parser-refactor-workspace` directory. The actual output for each case exactly matched its complete expected-output block above.
@@ -225,6 +251,62 @@ Exactly the complete expected-output block for this test case above.
 
 ```text
 Exactly matched the complete expected-output block for this test case above.
+```
+
+- **Result:** PASS
+
+## Test session record — 2026-09-11 (assertions)
+
+Java 25.0.4 direct compilation and both planned console cases ran successfully. Gradle wrapper could not start because its lock directory was unavailable at `C:\.gradle`.
+
+### Attempted test: create and list dated tasks
+
+- **Console input sent:**
+
+```text
+todo borrow book
+deadline return book /by 2/12/2019 1800
+event project meeting /from 3/12/2019 0900 /to 3/12/2019 1100
+list
+bye
+```
+
+- **Expected output:**
+
+```text
+Complete expected-output block for this test case above.
+```
+
+- **Actual output:**
+
+```text
+Process exited 0; welcome, task creation, list, and bye output produced.
+```
+
+- **Result:** PASS
+
+### Attempted test: reload and save mutations
+
+- **Console input sent:**
+
+```text
+mark 2
+delete 1
+deadline impossible /by 31/2/2019 1800
+list
+bye
+```
+
+- **Expected output:**
+
+```text
+Complete expected-output block for this test case above.
+```
+
+- **Actual output:**
+
+```text
+Process exited 0; mark, delete, invalid-date error, list, and bye output produced.
 ```
 
 - **Result:** PASS
