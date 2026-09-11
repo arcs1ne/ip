@@ -129,6 +129,7 @@ public class Storage {
      * Converts a task into one saved record of the correct format in the data file.
      */
     private String toRecord(Task task) {
+        assert task != null : "saved task must exist";
         String status = task.isDone() ? COMPLETE_STATUS : INCOMPLETE_STATUS;
         if (task instanceof ToDo) {
             return TODO_TYPE + FIELD_SEPARATOR + status + FIELD_SEPARATOR + task.getDescription();
@@ -137,6 +138,7 @@ public class Storage {
             return DEADLINE_TYPE + FIELD_SEPARATOR + status + FIELD_SEPARATOR + task.getDescription()
                     + FIELD_SEPARATOR + deadline.getBy().format(FILE_DATE_FORMATTER);
         }
+        assert task instanceof Event : "task must be ToDo, Deadline, or Event";
         Event event = (Event) task;
         return EVENT_TYPE + FIELD_SEPARATOR + status + FIELD_SEPARATOR + task.getDescription()
                 + FIELD_SEPARATOR + event.getFrom().format(FILE_DATE_FORMATTER)
