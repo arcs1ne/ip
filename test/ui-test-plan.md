@@ -161,6 +161,78 @@ Both cases exited with code 0: dated-task creation/listing, FIND, mark, unmark, 
 
 - **Result:** PASS (2 cases)
 
+## Test session record — 2026-09-11 (storage format constants)
+
+Java 25.0.4 direct compilation of console sources + first planned case passed in isolated `ui-test-storage-constants-workspace`.
+
+- **Actual output:**
+
+```text
+Application exited with code 0 after creating and listing ToDo, Deadline, and Event records.
+```
+
+- **Result:** PASS
+
+## Test session record — 2026-09-11 (TaskList.find normalization)
+
+Java 25.0.4 direct compilation of console sources + focused find scenario passed in isolated `ui-test-tasklist-find-workspace`.
+
+- **Actual output:**
+
+```text
+Application exited with code 0 and returned matching task for case-insensitive FIND command.
+```
+
+- **Result:** PASS
+
+## Test session record — 2026-09-11 (Tangent command-loop extraction)
+
+Java 25.0.4 direct compilation of console sources + focused add/list/exit scenario passed.
+
+- **Actual output:**
+
+```text
+Application exited with code 0 after adding, listing, and exiting normally.
+```
+
+- **Result:** PASS
+
+## Test session record — 2026-09-11 (UI task-count formatter)
+
+Java 25.0.4 direct compilation of console sources + focused add/delete/exit scenario passed.
+
+- **Actual output:**
+
+```text
+Application exited with code 0; add and delete confirmations displayed correct task counts.
+```
+
+- **Result:** PASS
+
+## Test session record — 2026-09-11 (status-command consolidation)
+
+Java 25.0.4 direct compilation of console sources + focused mark/unmark/exit scenario passed.
+
+- **Actual output:**
+
+```text
+Application exited with code 0; mark and unmark confirmations displayed correctly.
+```
+
+- **Result:** PASS
+
+## Test session record — 2026-09-11 (quality pass)
+
+Java 25.0.4 direct compilation of console sources + two focused scenarios passed.
+
+- **Actual output:**
+
+```text
+Both cases exited with code 0: dated-task creation/listing, FIND, mark, unmark, delete, and exit.
+```
+
+- **Result:** PASS (2 cases)
+
 ## Test session record — 2026-09-11 (remaining quality fixes)
 
 Java 25.0.4 direct compilation of console sources + combined command scenario passed.

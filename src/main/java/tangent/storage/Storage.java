@@ -132,6 +132,7 @@ public class Storage {
      * Converts a task into one saved record of the correct format in the data file.
      */
     private String toRecord(Task task) {
+        assert task != null : "saved task must exist";
         String status = task.isDone() ? COMPLETE_STATUS : INCOMPLETE_STATUS;
         if (task instanceof ToDo) {
             return TODO_TYPE + FIELD_SEPARATOR + status + FIELD_SEPARATOR + task.getDescription();
