@@ -1,6 +1,7 @@
 package tangent.ui;
 
 import java.util.Scanner;
+import java.util.function.Consumer;
 
 import tangent.task.Task;
 import tangent.task.TaskList;
@@ -18,17 +19,34 @@ public class Ui {
                ██║   ██║  ██║██║ ╚████║╚██████╔╝███████╗██║ ╚████║   ██║
                ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚══════╝╚═╝  ╚═══╝   ╚═╝""";
 
+    /** Receives formatted messages for display. */
+    private final Consumer<String> output;
+
+    /** Creates a UI that writes messages to standard output. */
+    public Ui() {
+        this(System.out::println);
+    }
+
+    /**
+     * Creates a UI that sends messages to the supplied output handler.
+     *
+     * @param output handler that receives each formatted message
+     */
+    public Ui(Consumer<String> output) {
+        this.output = output;
+    }
+
     /** Displays the greeting shown when the program starts. */
     public void showWelcome() {
         showDivider();
-        System.out.println(BANNER);
-        System.out.println("good morning/afternoon/evening ^-^ I'm TANGENT.\nwhat do you want me to do?");
+        display(BANNER);
+        display("good morning/afternoon/evening ^-^ I'm TANGENT.\nwhat do you want me to do?");
         showDivider();
     }
 
     /** Displays the divider used to separate responses in the console. */
     public void showDivider() {
-        System.out.println(DIVIDER);
+        display(DIVIDER);
     }
 
     /** Reads and trims one command entered by the user. */
@@ -38,22 +56,22 @@ public class Ui {
 
     /** Displays an error message from the application. */
     public void showError(String message) {
-        System.out.println(message);
+        display(message);
     }
 
     /** Displays the tasks currently stored in the task list with 1-based indexing. */
     public void showTaskList(TaskList tasks) {
         if (tasks.isEmpty()) {
-            System.out.println("no tasks yet!");
+            display("no tasks yet!");
         }
         for (int i = 0; i < tasks.size(); i++) {
-            System.out.println((i + 1) + ". " + tasks.get(i));
+            display((i + 1) + ". " + tasks.get(i));
         }
     }
 
     /** Displays the farewell message shown when the program exits. */
     public void showGoodbye() {
-        System.out.println("bye o/ hope to see you again soon");
+        display("bye o/ hope to see you again soon");
     }
 
     /**
@@ -63,33 +81,33 @@ public class Ui {
      */
     public void showTaskStatusChanged(boolean isDone) {
         if (isDone) {
-            System.out.println("i've marked it as done!");
+            display("i've marked it as done!");
         } else {
-            System.out.println("i've marked it as undone!");
+            display("i've marked it as undone!");
         }
     }
 
     /** Displays confirmation that a task was removed and displays the remaining task count. */
     public void showTaskDeleted(Task removedTask, TaskList tasks) {
-        System.out.println("got it! i've removed this task:");
-        System.out.println(removedTask);
+        display("got it! i've removed this task:");
+        display(removedTask.toString());
         if (tasks.isEmpty()) {
-            System.out.println("you now have no tasks in the list!");
+            display("you now have no tasks in the list!");
         } else if (tasks.size() == 1) {
-            System.out.println("you now have 1 task in the list!");
+            display("you now have 1 task in the list!");
         } else {
-            System.out.println("you now have " + tasks.size() + " tasks in the list!");
+            display("you now have " + tasks.size() + " tasks in the list!");
         }
     }
 
     /** Displays confirmation that a task was added and displays the new task count. */
     public void showTaskAdded(Task task, TaskList tasks) {
-        System.out.println("got it! you have a new task: ");
-        System.out.println(task);
+        display("got it! you have a new task: ");
+        display(task.toString());
         if (tasks.size() == 1) {
-            System.out.println("you now have 1 task in the list!");
+            display("you now have 1 task in the list!");
         } else {
-            System.out.println("you now have " + tasks.size() + " tasks in the list!");
+            display("you now have " + tasks.size() + " tasks in the list!");
         }
     }
 
@@ -101,10 +119,15 @@ public class Ui {
      */
     public void showMatchingTasks(String keyword, TaskList matches) {
         if (matches.isEmpty()) {
-            System.out.println("there were no matching tasks in the task list!");
+            display("there were no matching tasks in the task list!");
         } else {
-            System.out.println("here are the tasks matching the keyword " + keyword + ":");
+            display("here are the tasks matching the keyword " + keyword + ":");
             showTaskList(matches);
         }
+    }
+
+    /** Sends one formatted message to configured output handler. */
+    protected void display(String message) {
+        output.accept(message);
     }
 }

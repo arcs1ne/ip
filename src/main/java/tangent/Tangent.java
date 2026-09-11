@@ -15,6 +15,10 @@ public class Tangent {
     private final Storage storage;
     /** A user interface object that handles all console responses. */
     private final Ui ui;
+    /** The task list shared by console and GUI command execution. */
+    private TaskList tasks;
+    /** Whether most recent command requested application exit. */
+    private boolean exitRequested;
 
     /** Creates a new instance of Tangent using the supplied file path. */
     public Tangent(String filePath) {
@@ -25,9 +29,8 @@ public class Tangent {
     /** Runs Tangent's console command loop. */
     public void run() {
         ui.showWelcome();
-        TaskList tasks;
         try {
-            tasks = new TaskList(storage.load());
+            tasks = loadTasks();
         } catch (TangentException e) {
             ui.showError(e.getMessage());
             return;
@@ -61,10 +64,31 @@ public class Tangent {
         new Tangent("data/tangent.txt").run();
     }
 
-    /**
-     * Generates a response for the user's chat message.
-     */
-    public String getResponse(String input) {
-        return "Tangent heard: " + input;
+    /** Executes one command using the supplied UI output handler. */
+    public void executeCommand(String input, Ui commandUi) {
+        try {
+            if (tasks == null) {
+                tasks = loadTasks();
+            }
+            if (input.isBlank()) {
+                commandUi.showError("please enter a command or task description!");
+                return;
+            }
+            Command command = Parser.parse(input.trim());
+            command.execute(tasks, commandUi, storage);
+            exitRequested = command.isExit();
+        } catch (TangentException e) {
+            commandUi.showError(e.getMessage());
+        }
+    }
+
+    /** Returns whether GUI should close after the most recent command. */
+    public boolean isExitRequested() {
+        return exitRequested;
+    }
+
+    /** Loads the saved tasks into a new task list. */
+    private TaskList loadTasks() throws TangentException {
+        return new TaskList(storage.load());
     }
 }

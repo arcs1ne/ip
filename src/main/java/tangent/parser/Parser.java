@@ -186,7 +186,7 @@ public class Parser {
         try {
             return LocalDateTime.parse(input.trim(), INPUT_FORMATTER);
         } catch (DateTimeParseException e) {
-            throw new TangentException("bad date format :( ensure your dates are in the format"
+            throw new TangentException("bad date format :( ensure your dates are in the format "
                     + "DD/MM/YYYY HHmm (example: 07/06/2026 2200)");
         }
     }

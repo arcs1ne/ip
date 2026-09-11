@@ -1,5 +1,6 @@
 package tangent.gui;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
@@ -8,6 +9,7 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import tangent.Tangent;
+import tangent.ui.Ui;
 
 /**
  * Controller for the main GUI.
@@ -26,6 +28,8 @@ public class MainWindow extends AnchorPane {
 
     private final Image userImage = new Image(this.getClass().getResourceAsStream("/images/ena.jpg"));
     private final Image tangentImage = new Image(this.getClass().getResourceAsStream("/images/mizuki.jpg"));
+    private final StringBuilder responseOutput = new StringBuilder();
+    private final Ui ui = new Ui(this::appendResponse);
 
     /** Scrolls the ScrollPane to the bottom whenever the dialog box is resized. */
     @FXML
@@ -34,7 +38,7 @@ public class MainWindow extends AnchorPane {
     }
 
     /** Injects the Tangent instance. */
-    public void setTangent(Tangent t){
+    public void setTangent(Tangent t) {
         tangent = t;
     }
 
@@ -45,11 +49,27 @@ public class MainWindow extends AnchorPane {
     @FXML
     private void handleUserInput() {
         String input = userInput.getText();
-        String response = tangent.getResponse(input);
+        if (input.isBlank()) {
+            return;
+        }
+        responseOutput.setLength(0);
+        tangent.executeCommand(input, ui);
+        String response = responseOutput.toString();
         dialogContainer.getChildren().addAll(
                 DialogBox.getUserDialog(input, userImage),
                 DialogBox.getTangentDialog(response, tangentImage)
         );
         userInput.clear();
+        if (tangent.isExitRequested()) {
+            Platform.exit();
+        }
+    }
+
+    /** Appends one formatted command message to the GUI response buffer. */
+    private void appendResponse(String message) {
+        if (responseOutput.length() > 0) {
+            responseOutput.append(System.lineSeparator());
+        }
+        responseOutput.append(message);
     }
 }
