@@ -72,6 +72,10 @@ jar {
 
 shadowJar {
     archiveFileName = 'tangent.jar'
+
+    manifest {
+        attributes 'Main-Class': 'tangent.gui.Launcher'
+    }
 }
 
 run {
