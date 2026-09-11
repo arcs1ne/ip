@@ -39,23 +39,29 @@ public class Tangent {
             while (scanner.hasNextLine()) {
                 String input = ui.readCommand(scanner);
                 ui.showDivider();
-                if (input.isEmpty()) {
-                    ui.showError("please enter a command or task description!");
-                    ui.showDivider();
-                    continue;
-                }
-                try {
-                    Command command = Parser.parse(input);
-                    command.execute(tasks, ui, storage);
-                    ui.showDivider();
-                    if (command.isExit()) {
-                        return;
-                    }
-                } catch (TangentException e) {
-                    ui.showError(e.getMessage());
-                    ui.showDivider();
+                if (processCommand(input)) {
+                    return;
                 }
             }
+        }
+    }
+
+    /** Processes one console command and returns whether the application should exit. */
+    private boolean processCommand(String input) {
+        if (input.isEmpty()) {
+            ui.showError("please enter a command or task description!");
+            ui.showDivider();
+            return false;
+        }
+        try {
+            Command command = Parser.parse(input);
+            command.execute(tasks, ui, storage);
+            ui.showDivider();
+            return command.isExit();
+        } catch (TangentException e) {
+            ui.showError(e.getMessage());
+            ui.showDivider();
+            return false;
         }
     }
 

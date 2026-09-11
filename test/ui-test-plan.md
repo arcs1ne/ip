@@ -113,6 +113,42 @@ Application exited with code 0 and returned matching task for case-insensitive F
 
 - **Result:** PASS
 
+## Test session record — 2026-09-11 (Tangent command-loop extraction)
+
+Java 25.0.4 direct compilation of console sources + focused add/list/exit scenario passed.
+
+- **Actual output:**
+
+```text
+Application exited with code 0 after adding, listing, and exiting normally.
+```
+
+- **Result:** PASS
+
+## Test session record — 2026-09-11 (UI task-count formatter)
+
+Java 25.0.4 direct compilation of console sources + focused add/delete/exit scenario passed.
+
+- **Actual output:**
+
+```text
+Application exited with code 0; add and delete confirmations displayed correct task counts.
+```
+
+- **Result:** PASS
+
+## Test session record — 2026-09-11 (status-command consolidation)
+
+Java 25.0.4 direct compilation of console sources + focused mark/unmark/exit scenario passed.
+
+- **Actual output:**
+
+```text
+Application exited with code 0; mark and unmark confirmations displayed correctly.
+```
+
+- **Result:** PASS
+
 ## Test session record — 2026-09-01 (parser refactor)
 
 All three test cases passed in order with Java 25.0.4 in an isolated `ui-test-parser-refactor-workspace` directory. The actual output for each case exactly matched its complete expected-output block above.
