@@ -116,7 +116,7 @@ public class Ui {
         }
     }
 
-    /** Formats the task-count confirmation shared by add and delete responses. */
+    /** Formats the task-count confirmation after adding or deleting a task. */
     private String formatTaskCount(TaskList tasks) {
         if (tasks.isEmpty()) {
             return "you now have no tasks in the list!";

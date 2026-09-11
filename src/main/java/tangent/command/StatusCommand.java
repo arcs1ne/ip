@@ -6,24 +6,24 @@ import tangent.task.Task;
 import tangent.task.TaskList;
 import tangent.ui.Ui;
 
-/** Changes one task's completion status and saves the resulting task list. */
+/** Changes a task's completion status and saves the resulting task list. */
 public abstract class StatusCommand extends Command {
     /** 0-based index of the task whose status is changed. */
     private final int taskIndex;
 
-    /** Creates a status command for the supplied zero-based task index. */
+    /** Creates a status command for the supplied 0-based task index. */
     protected StatusCommand(int taskIndex) {
         this.taskIndex = taskIndex;
     }
 
-    /** Returns the completion status this command applies. */
+    /** Returns the completion status this command is expected to apply. */
     protected abstract boolean targetStatus();
 
     /** Displays the confirmation after a successful status change. */
     protected abstract void showConfirmation(Ui ui);
 
     /**
-     * Changes a task's status and persists the change.
+     * Changes a task's status and saves the change in the storage.
      *
      * @throws TangentException if the task index is invalid or saving fails
      */

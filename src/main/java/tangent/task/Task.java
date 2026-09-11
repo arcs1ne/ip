@@ -2,6 +2,8 @@ package tangent.task;
 
 /** Represents a generic task object with a description and a done status. */
 public class Task {
+    private static final String DONE_ICON = "X";
+    private static final String UNDONE_ICON = " ";
     /** The description of the task. */
     private final String description;
     /** Whether the task is done or not done. */
@@ -15,7 +17,7 @@ public class Task {
 
     /** Returns a string based on the done status: "X" if the task is done, " " if the task is not done. */
     public String getStatusIcon() {
-        return (isDone ? "X" : " ");
+        return isDone ? DONE_ICON : UNDONE_ICON;
     }
 
     /** Returns the task description. */

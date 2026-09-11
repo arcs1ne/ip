@@ -50,18 +50,14 @@ public class Parser {
             case UNMARK:
                 return new UnmarkCommand(parseTaskIndex(inputs));
             case FIND:
-                if (inputs.length < 2 || inputs[1].trim().isEmpty()) {
-                    throw new TangentException("please provide a keyword to search for!");
-                }
+                requireArgument(inputs, "please provide a keyword to search for!");
                 return new FindCommand(inputs[1].trim());
             case DELETE:
                 return new DeleteCommand(parseTaskIndex(inputs));
             case TODO:
             case DEADLINE:
             case EVENT:
-                if (inputs.length < 2 || inputs[1].trim().isEmpty()) {
-                    throw new TangentException("please provide a task description!");
-                }
+                requireArgument(inputs, "please provide a task description!");
                 return new AddCommand(parseTask(inputs[1], type));
             case LIST:
                 return new ListCommand();
@@ -69,6 +65,13 @@ public class Parser {
                 return new ExitCommand();
             default:
                 throw new TangentException("invalid command!");
+        }
+    }
+
+    /** Ensures a command has non-empty text after its keyword. */
+    private static void requireArgument(String[] inputs, String errorMessage) throws TangentException {
+        if (inputs.length < 2 || inputs[1].trim().isEmpty()) {
+            throw new TangentException(errorMessage);
         }
     }
 
@@ -146,9 +149,12 @@ public class Parser {
     private static Event parseEvent(String details) throws TangentException {
         int fromIndex = details.indexOf(FROM_MARKER);
         int toIndex = details.indexOf(TO_MARKER);
-        if (fromIndex <= 0 || toIndex <= fromIndex
-                || details.indexOf(FROM_MARKER, fromIndex + FROM_MARKER.length()) != -1
-                || details.indexOf(TO_MARKER, toIndex + TO_MARKER.length()) != -1) {
+        boolean hasValidMarkerOrder = fromIndex > 0 && toIndex > fromIndex;
+        boolean hasRepeatedFromMarker = details.indexOf(FROM_MARKER,
+                fromIndex + FROM_MARKER.length()) != -1;
+        boolean hasRepeatedToMarker = details.indexOf(TO_MARKER,
+                toIndex + TO_MARKER.length()) != -1;
+        if (!hasValidMarkerOrder || hasRepeatedFromMarker || hasRepeatedToMarker) {
             throw new TangentException("please use: event DESCRIPTION /from START /to END");
         }
         String description = details.substring(0, fromIndex).trim();

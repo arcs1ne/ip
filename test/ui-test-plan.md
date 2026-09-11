@@ -149,6 +149,18 @@ Application exited with code 0; mark and unmark confirmations displayed correctl
 
 - **Result:** PASS
 
+## Test session record — 2026-09-11 (quality pass)
+
+Java 25.0.4 direct compilation of console sources + two focused scenarios passed.
+
+- **Actual output:**
+
+```text
+Both cases exited with code 0: dated-task creation/listing, FIND, mark, unmark, delete, and exit.
+```
+
+- **Result:** PASS (2 cases)
+
 ## Test session record — 2026-09-01 (parser refactor)
 
 All three test cases passed in order with Java 25.0.4 in an isolated `ui-test-parser-refactor-workspace` directory. The actual output for each case exactly matched its complete expected-output block above.
