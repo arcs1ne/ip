@@ -19,21 +19,25 @@ public class TaskList {
 
     /** Creates a task list containing the supplied loaded tasks. */
     public TaskList(List<Task> tasks) {
+        assert tasks != null : "loaded task collection must exist";
         this.tasks = new ArrayList<>(tasks);
     }
 
     /** Creates a task list containing the supplied tasks */
     public TaskList(Task... tasks) {
+        assert tasks != null : "task varargs must exist";
         this.tasks = new ArrayList<>(List.of(tasks));
     }
 
     /** Adds a task to the end of this list. */
     public void add(Task task) {
+        assert task != null : "task list must not contain null tasks";
         tasks.add(task);
     }
 
     /** Adds a task at the specified 0-based index in this list. */
     public void add(int index, Task task) {
+        assert task != null : "task list must not contain null tasks";
         tasks.add(index, task);
     }
 

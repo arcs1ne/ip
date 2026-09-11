@@ -66,6 +66,8 @@ public class Tangent {
 
     /** Executes one command using the supplied UI output handler. */
     public void executeCommand(String input, Ui commandUi) {
+        assert input != null : "command input must exist";
+        assert commandUi != null : "command UI must exist";
         try {
             if (tasks == null) {
                 tasks = loadTasks();
