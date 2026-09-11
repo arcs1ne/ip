@@ -17,8 +17,6 @@ import tangent.task.Event;
 import tangent.task.Task;
 import tangent.task.ToDo;
 
-
-
 /**
  * Loads tasks from and saves tasks to the data file specified by a file path.
  */
@@ -31,10 +29,15 @@ public class Storage {
             .withResolverStyle(ResolverStyle.STRICT);
     /** The separator to be used in the data file to separate the details of a task. */
     private static final String FIELD_SEPARATOR = " | ";
+    /** Record type for ToDo tasks. */
     private static final String TODO_TYPE = "T";
+    /** Record type for Deadline tasks. */
     private static final String DEADLINE_TYPE = "D";
+    /** Record type for Event tasks. */
     private static final String EVENT_TYPE = "E";
+    /** Stored status for incomplete tasks. */
     private static final String INCOMPLETE_STATUS = "0";
+    /** Stored status for completed tasks. */
     private static final String COMPLETE_STATUS = "1";
     /** The path to the specified dataFile. */
     private final Path dataFile;
