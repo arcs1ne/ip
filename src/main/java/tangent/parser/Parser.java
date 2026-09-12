@@ -4,6 +4,10 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import tangent.command.AddCommand;
 import tangent.command.Command;
@@ -37,6 +41,9 @@ public class Parser {
     private static final String EVENT_FORMAT_MESSAGE = "please use: event DESCRIPTION /from START /to END";
     private static final String BAD_DATE_MESSAGE = "bad date format :( ensure your dates are in the format "
             + "DD/MM/YYYY HHmm (example: 07/06/2026 2200)";
+    private static final String INVALID_TASK_INDEX_MESSAGE = "please provide a valid task number!";
+    private static final String TASK_INDEX_FORMAT_MESSAGE = "please provide task numbers or ranges separated by "
+            + "spaces, (example: delete 1 4-6)";
 
     /**
      * Converts a complete user command into the command object that performs its action.
@@ -51,14 +58,14 @@ public class Parser {
         CommandTypes type = CommandTypes.fromInput(inputs[0]);
         switch (type) {
             case MARK:
-                return new MarkCommand(parseTaskIndex(inputs));
+                return new MarkCommand(parseTaskIndexes(inputs));
             case UNMARK:
-                return new UnmarkCommand(parseTaskIndex(inputs));
+                return new UnmarkCommand(parseTaskIndexes(inputs));
             case FIND:
                 requireArgument(inputs, "please provide a keyword to search for!");
                 return new FindCommand(inputs[1].trim());
             case DELETE:
-                return new DeleteCommand(parseTaskIndex(inputs));
+                return new DeleteCommand(parseTaskIndexes(inputs));
             case TODO:
             case DEADLINE:
             case EVENT:
@@ -81,24 +88,79 @@ public class Parser {
     }
 
     /**
-     * Validates a 1-based task index input and returns its 0-based index.
+     * Parses one or more space-separated task indexes or inclusive task-index ranges.
      *
-     * @param inputs An array containing the command type followed by the rest of the user's command.
-     * @throws TangentException if a task number is not provided, an invalid task number is provided,
-     *     or the task number is out of bounds.
+     * @param inputs An array containing the command type followed by task selectors.
+     * @return 0-based task indexes in the order supplied by the user
+     * @throws TangentException if selectors are invalid, i.e. the indexes are
+     *     missing, in the wrong format, reversed, duplicated or overlapping.
      */
-    public static int parseTaskIndex(String[] inputs) throws TangentException {
-        if (inputs.length < 2) {
-            throw new TangentException("please provide a valid task number!");
+    public static List<Integer> parseTaskIndexes(String[] inputs) throws TangentException {
+        if (inputs.length < 2 || inputs[1].trim().isEmpty()) {
+            throw new TangentException(INVALID_TASK_INDEX_MESSAGE);
         }
-        try {
-            int taskIndex = Integer.parseInt(inputs[1]) - 1;
-            if (taskIndex < 0) {
-                throw new TangentException("please provide a valid task number!");
+        List<Integer> taskIndexes = new ArrayList<>();
+        Set<Integer> seenIndexes = new HashSet<>();
+        String[] selectors = inputs[1].trim().split(" +");
+        for (String selector : selectors) {
+            parseSelector(selector, taskIndexes, seenIndexes);
+        }
+        return taskIndexes;
+    }
+
+    /** Parses one selector and appends its zero-based indexes to the supplied collections. */
+    private static void parseSelector(String selector, List<Integer> taskIndexes, Set<Integer> seenIndexes)
+            throws TangentException {
+        // Checks for cases without a start index (delete -3) or extra leading zero (delete 04)
+        if (selector.matches("-[0-9]+") || selector.matches("0[0-9]*")) {
+            throw new TangentException(INVALID_TASK_INDEX_MESSAGE);
+        }
+        // Checks for cases with a single index (e.g. delete 2 / delete 20)
+        if (selector.matches("[1-9][0-9]*")) {
+            addTaskIndex(parseTaskNumber(selector), taskIndexes, seenIndexes);
+            return;
+        }
+        // Checks for cases without a valid separator (e.g. delete 3&4)
+        if (!selector.contains("-") && !selector.contains(",")) {
+            throw new TangentException(INVALID_TASK_INDEX_MESSAGE);
+        }
+        // Checks for cases that are not a range bounded by 2 integers (e.g. delete 2a-3)
+        if (!selector.matches("[1-9][0-9]*-[1-9][0-9]*")) {
+            throw new TangentException(TASK_INDEX_FORMAT_MESSAGE);
+        }
+        String[] range = selector.split("-", -1);
+        int start = parseTaskNumber(range[0]);
+        int end = parseTaskNumber(range[1]);
+        // Checks for cases that have a start index greater than the end index (e.g. delete 6-4)
+        if (start >= end) {
+            throw new TangentException(INVALID_TASK_INDEX_MESSAGE);
+        }
+        // Adds all task numbers within the range
+        for (int taskNumber = start; taskNumber <= end; taskNumber++) {
+            addTaskIndex(taskNumber, taskIndexes, seenIndexes);
+            // Prevents overflow in cases like 1-2147483647
+            if (taskNumber == end) {
+                break;
             }
-            return taskIndex;
+        }
+    }
+
+    /** Adds one parsed task number after checking for duplicate or overlapping selectors. */
+    private static void addTaskIndex(int taskNumber, List<Integer> taskIndexes, Set<Integer> seenIndexes)
+            throws TangentException {
+        int taskIndex = taskNumber - 1;
+        if (!seenIndexes.add(taskIndex)) {
+            throw new TangentException(INVALID_TASK_INDEX_MESSAGE);
+        }
+        taskIndexes.add(taskIndex);
+    }
+
+    /** Converts one task number to an integer. */
+    private static int parseTaskNumber(String taskNumber) throws TangentException {
+        try {
+            return Integer.parseInt(taskNumber);
         } catch (NumberFormatException e) {
-            throw new TangentException("please provide a valid task number!");
+            throw new TangentException(INVALID_TASK_INDEX_MESSAGE);
         }
     }
 

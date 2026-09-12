@@ -1,21 +1,22 @@
 package tangent.command;
+
+import java.util.List;
+
 import tangent.exception.TangentException;
 import tangent.storage.Storage;
 import tangent.task.Task;
 import tangent.task.TaskList;
 import tangent.ui.Ui;
 
-/** Removes one task from the task list and saves the result. */
+/** Removes one or more tasks from the task list and saves the result. */
 public class DeleteCommand extends Command {
 
-    /** 0-based index of the task to be removed. */
-    private final int taskIndex;
+    /** 0-based indexes of the tasks to be removed. */
+    private final List<Integer> taskIndexes;
 
-    /**
-     * Creates a command that deletes the task at the specified 0-based index.
-     */
-    public DeleteCommand(int taskIndex) {
-        this.taskIndex = taskIndex;
+    /** Creates a command that deletes tasks at the specified 0-based indexes. */
+    public DeleteCommand(List<Integer> taskIndexes) {
+        this.taskIndexes = List.copyOf(taskIndexes);
     }
 
     /**
@@ -25,14 +26,14 @@ public class DeleteCommand extends Command {
      */
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) throws TangentException {
-        tasks.validateIndex(taskIndex);
-        Task removedTask = tasks.remove(taskIndex);
+        tasks.validateIndexes(taskIndexes);
+        List<Task> removedTasks = tasks.removeAtIndexes(taskIndexes);
         try {
             storage.save(tasks.toList());
         } catch (TangentException e) {
-            tasks.add(taskIndex, removedTask);
+            tasks.restoreAtIndexes(taskIndexes, removedTasks);
             throw e;
         }
-        ui.showTaskDeleted(removedTask, tasks);
+        ui.showTasksDeleted(removedTasks, tasks);
     }
 }

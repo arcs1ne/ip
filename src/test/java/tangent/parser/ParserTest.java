@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 import tangent.command.AddCommand;
@@ -41,6 +43,30 @@ public class ParserTest {
     }
 
     @Test
+    public void parseTaskNumbers_validIndexes_correctIndexListReturned() throws TangentException {
+        List<Integer> indexes = Parser.parseTaskIndexes(new String[]{"delete", "1 2-4 6-8"});
+
+        assertEquals(List.of(0, 1, 2, 3, 5, 6, 7), indexes);
+    }
+
+    @Test
+    public void parseTaskNumbers_invalidSyntax_exceptionWithHelpThrown() {
+        assertInvalidSelectorFormat("delete 2 - 5");
+        assertInvalidSelectorFormat("delete 02-05");
+        assertInvalidSelectorFormat("delete 2--5");
+        assertInvalidSelectorFormat("delete 2-");
+        assertInvalidSelectorFormat("delete 1,3");
+        assertInvalidTaskNumber("delete -5");
+    }
+
+    @Test
+    public void parseTaskNumbers_reversedRangeOrDuplicateIndex_exceptionThrown() {
+        assertInvalidTaskNumber("delete 5-2");
+        assertInvalidTaskNumber("delete 2 2");
+        assertInvalidTaskNumber("delete 1-3 3-5");
+    }
+
+    @Test
     public void parseTask_missingDescription_exceptionThrown() {
         assertMissingDescription("todo");
         assertMissingDescription("deadline");
@@ -69,5 +95,12 @@ public class ParserTest {
     private void assertMissingDescription(String input) {
         TangentException exception = assertThrows(TangentException.class, () -> Parser.parse(input));
         assertEquals("please provide a task description!", exception.getMessage());
+    }
+
+    /** Verifies malformed selectors produce the selector-format help message. */
+    private void assertInvalidSelectorFormat(String input) {
+        TangentException exception = assertThrows(TangentException.class, () -> Parser.parse(input));
+        assertEquals("please provide task numbers or ranges separated by spaces, (example: delete 1 4-6)",
+                exception.getMessage());
     }
 }

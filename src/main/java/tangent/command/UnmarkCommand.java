@@ -1,12 +1,16 @@
 package tangent.command;
 
+import java.util.List;
+
+import tangent.task.Task;
 import tangent.ui.Ui;
 
-/** Marks one task as undone and saves the resulting task list. */
+/** Marks one or more tasks as undone and saves the resulting task list. */
 public class UnmarkCommand extends StatusCommand {
-    /** Creates a command for the supplied zero-based task index. */
-    public UnmarkCommand(int taskIndex) {
-        super(taskIndex);
+
+    /** Creates a command that marks the supplied 0-based task indexes as undone. */
+    public UnmarkCommand(List<Integer> taskIndexes) {
+        super(taskIndexes);
     }
 
     @Override
@@ -15,7 +19,7 @@ public class UnmarkCommand extends StatusCommand {
     }
 
     @Override
-    protected void showConfirmation(Ui ui) {
-        ui.showTaskStatusChanged(false);
+    protected void showConfirmation(Ui ui, List<Task> changedTasks) {
+        ui.showTaskStatusChanged(false, changedTasks);
     }
 }
