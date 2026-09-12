@@ -89,6 +89,57 @@ Matches the complete expected-output block for this test case above.
 
 - **Result:** PASS
 
+## Test session record — 2026-09-12 (mass operations)
+
+Java 25.0.4 direct console compilation + exact comparison passed all three current UI-plan cases in order in isolated `ui-test-batch-plan-workspace-7`.
+
+### Attempted test: create and list dated tasks
+
+- **Console input sent:**
+
+```text
+todo borrow book
+deadline return book /by 2/12/2019 1800
+event project meeting /from 3/12/2019 0900 /to 3/12/2019 1100
+list
+bye
+```
+
+- **Expected output:** Complete expected-output block for this case above.
+- **Actual output:** Exact match; process exited with code 0.
+- **Result:** PASS
+
+### Attempted test: reload and perform batch mutations
+
+- **Console input sent:**
+
+```text
+mark 2-3
+unmark 2-3
+delete 1 3
+deadline impossible /by 31/2/2019 1800
+list
+bye
+```
+
+- **Expected output:** Complete expected-output block for this case above.
+- **Actual output:** Exact match; process exited with code 0.
+- **Result:** PASS
+
+### Attempted test: unmark and reload status
+
+- **Console input sent:**
+
+```text
+unmark 1
+list
+bye
+```
+
+- **Expected output:** Complete expected-output block for this case above.
+- **Actual output:** Exact match; process exited with code 0.
+- **Result:** PASS (3 cases)
+
 ## Test session record — 2026-09-11 (storage format constants)
 
 Java 25.0.4 direct compilation of console sources + first planned case passed in isolated `ui-test-storage-constants-workspace`.
@@ -433,14 +484,15 @@ Matches the complete expected-output block for this test case above.
 
 - **Result:** PASS
 
-## Test case: reload and save mutations
+## Test case: reload and perform batch mutations
 
-- **Aim:** Verify tasks reload and mark/delete are saved; invalid calendar dates are rejected.
+- **Aim:** Verify tasks reload, batch mark/unmark/delete use original indexes, and invalid calendar dates are rejected.
 - **Inputs:**
 
 ```text
-mark 2
-delete 1
+mark 2-3
+unmark 2-3
+delete 1 3
 deadline impossible /by 31/2/2019 1800
 list
 bye
@@ -452,7 +504,7 @@ bye
 ____________________________________________________________
 ████████╗ █████╗ ███╗   ██╗ ██████╗ ███████╗███╗   ██╗████████╗
 ╚══██╔══╝██╔══██╗████╗  ██║██╔════╝ ██╔════╝████╗  ██║╚══██╔══╝
-   ██║   ███████║██╔██╗ ██║██║  ███╗█████╗  ██╔██╗██║   ██║
+   ██║   ███████║██╔██╗ ██║██║  ███╗█████╗  ██╔██╗ ██║   ██║
    ██║   ██╔══██║██║╚██╗██║██║   ██║██╔══╝  ██║╚██╗██║   ██║
    ██║   ██║  ██║██║ ╚████║╚██████╔╝███████╗██║ ╚████║   ██║
    ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚══════╝╚═╝  ╚═══╝   ╚═╝
@@ -460,19 +512,26 @@ good morning/afternoon/evening ^-^ I'm TANGENT.
 what do you want me to do?
 ____________________________________________________________
 ____________________________________________________________
-i've marked it as done!
+i've marked 2 tasks as done!
+[D][X] return book (by: Dec 02 2019, 6:00PM)
+[E][X] project meeting (from: Dec 03 2019, 9:00AM to: Dec 03 2019, 11:00AM)
 ____________________________________________________________
 ____________________________________________________________
-got it! i've removed this task:
+i've marked 2 tasks as undone!
+[D][ ] return book (by: Dec 02 2019, 6:00PM)
+[E][ ] project meeting (from: Dec 03 2019, 9:00AM to: Dec 03 2019, 11:00AM)
+____________________________________________________________
+____________________________________________________________
+got it! i've removed these tasks:
 [T][ ] borrow book
-you now have 2 tasks in the list!
+[E][ ] project meeting (from: Dec 03 2019, 9:00AM to: Dec 03 2019, 11:00AM)
+removed 2 tasks, 1 tasks remaining!
 ____________________________________________________________
 ____________________________________________________________
 bad date format :( ensure your dates are in the format DD/MM/YYYY HHmm (example: 07/06/2026 2200)
 ____________________________________________________________
 ____________________________________________________________
-1. [D][X] return book (by: Dec 02 2019, 6:00PM)
-2. [E][ ] project meeting (from: Dec 03 2019, 9:00AM to: Dec 03 2019, 11:00AM)
+1. [D][ ] return book (by: Dec 02 2019, 6:00PM)
 ____________________________________________________________
 ____________________________________________________________
 bye o/ hope to see you again soon
@@ -504,11 +563,11 @@ good morning/afternoon/evening ^-^ I'm TANGENT.
 what do you want me to do?
 ____________________________________________________________
 ____________________________________________________________
-i've marked it as undone!
+i've marked 1 task as undone!
+[D][ ] return book (by: Dec 02 2019, 6:00PM)
 ____________________________________________________________
 ____________________________________________________________
 1. [D][ ] return book (by: Dec 02 2019, 6:00PM)
-2. [E][ ] project meeting (from: Dec 03 2019, 9:00AM to: Dec 03 2019, 11:00AM)
 ____________________________________________________________
 ____________________________________________________________
 bye o/ hope to see you again soon

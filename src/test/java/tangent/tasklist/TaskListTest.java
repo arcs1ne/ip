@@ -2,6 +2,8 @@ package tangent.tasklist;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 import tangent.task.Task;
@@ -46,5 +48,34 @@ public class TaskListTest {
         TaskList matches = tasks.find("movie");
 
         assertEquals(0, matches.size());
+    }
+
+    @Test
+    public void removeAtIndexes_usesOriginalIndexesAndReturnsOriginalOrder() {
+        Task first = new ToDo("first");
+        Task second = new ToDo("second");
+        Task third = new ToDo("third");
+        Task fourth = new ToDo("fourth");
+        TaskList tasks = new TaskList(first, second, third, fourth);
+
+        List<Task> removedTasks = tasks.removeAtIndexes(List.of(3, 1));
+
+        assertEquals(List.of(second, fourth), removedTasks);
+        assertEquals(List.of(first, third), tasks.toList());
+    }
+
+    @Test
+    public void restoreAtIndexes_restoresTasksToOriginalPositions() {
+        Task first = new ToDo("first");
+        Task second = new ToDo("second");
+        Task third = new ToDo("third");
+        Task fourth = new ToDo("fourth");
+        TaskList tasks = new TaskList(first, second, third, fourth);
+        List<Integer> indexes = List.of(3, 1);
+        List<Task> removedTasks = tasks.removeAtIndexes(indexes);
+
+        tasks.restoreAtIndexes(indexes, removedTasks);
+
+        assertEquals(List.of(first, second, third, fourth), tasks.toList());
     }
 }

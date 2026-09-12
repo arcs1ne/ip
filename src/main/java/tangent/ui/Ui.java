@@ -1,5 +1,6 @@
 package tangent.ui;
 
+import java.util.List;
 import java.util.Scanner;
 import java.util.function.Consumer;
 
@@ -87,11 +88,29 @@ public class Ui {
         }
     }
 
-    /** Displays confirmation that a task was removed and displays the remaining task count. */
-    public void showTaskDeleted(Task removedTask, TaskList tasks) {
-        display("got it! i've removed this task:");
-        display(removedTask.toString());
-        display(formatTaskCount(tasks));
+    /** Displays a status-change summary followed by every changed task. */
+    public void showTaskStatusChanged(boolean isDone, List<Task> changedTasks) {
+        String status = isDone ? "done" : "undone";
+        String noun = changedTasks.size() == 1 ? "task" : "tasks";
+        display("i've marked " + changedTasks.size() + " " + noun + " as " + status + "!");
+        for (Task task : changedTasks) {
+            display(task.toString());
+        }
+    }
+
+    /** Displays removed tasks in original order followed by the remaining task count. */
+    public void showTasksDeleted(List<Task> removedTasks, TaskList tasks) {
+        if (removedTasks.size() == 1) {
+            display("got it! i've removed this task:");
+            display(removedTasks.get(0).toString());
+            display(formatTaskCount(tasks));
+            return;
+        }
+        display("got it! i've removed these tasks:");
+        for (Task task : removedTasks) {
+            display(task.toString());
+        }
+        display("removed " + removedTasks.size() + " tasks, " + tasks.size() + " tasks remaining!");
     }
 
     /** Displays confirmation that a task was added and displays the new task count. */

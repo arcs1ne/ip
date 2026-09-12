@@ -1,12 +1,16 @@
 package tangent.command;
 
+import java.util.List;
+
+import tangent.task.Task;
 import tangent.ui.Ui;
 
-/** Marks one task as done and saves the resulting task list. */
+/** Marks one or more tasks as done and saves the resulting task list. */
 public class MarkCommand extends StatusCommand {
-    /** Creates a command at the supplied zero-based task index. */
-    public MarkCommand(int taskIndex) {
-        super(taskIndex);
+
+    /** Creates a command that marks the supplied 0-based task indexes as done. */
+    public MarkCommand(List<Integer> taskIndexes) {
+        super(taskIndexes);
     }
 
     @Override
@@ -15,7 +19,7 @@ public class MarkCommand extends StatusCommand {
     }
 
     @Override
-    protected void showConfirmation(Ui ui) {
-        ui.showTaskStatusChanged(true);
+    protected void showConfirmation(Ui ui, List<Task> changedTasks) {
+        ui.showTaskStatusChanged(true, changedTasks);
     }
 }

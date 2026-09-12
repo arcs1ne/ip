@@ -1,6 +1,7 @@
 package tangent.task;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -42,11 +43,6 @@ public class TaskList {
         tasks.add(index, task);
     }
 
-    /** Removes and returns the task at the specified 0-based index. */
-    public Task remove(int index) {
-        return tasks.remove(index);
-    }
-
     /** Removes and returns the final task in this list. */
     public Task removeLast() {
         return tasks.removeLast();
@@ -57,14 +53,43 @@ public class TaskList {
         return tasks.get(index);
     }
 
-    /**
-     * Ensures the supplied zero-based index is valid for the given task list.
-     *
-     * @throws TangentException if the index is out of bounds.
-     */
-    public void validateIndex(int index) throws TangentException {
-        if (index < 0 || index >= tasks.size()) {
-            throw new TangentException("please provide a valid task number!");
+    /** Validates every supplied zero-based index before a batch operation mutates this list. */
+    public void validateIndexes(List<Integer> indexes) throws TangentException {
+        for (int index : indexes) {
+            if (index < 0 || index >= tasks.size()) {
+                throw new TangentException("please provide a valid task number!");
+            }
+        }
+    }
+
+    /** Returns selected tasks in their original task-list order. */
+    public List<Task> getTasksAtIndexes(List<Integer> indexes) {
+        List<Task> selectedTasks = new ArrayList<>();
+        for (int index = 0; index < tasks.size(); index++) {
+            if (indexes.contains(index)) {
+                selectedTasks.add(tasks.get(index));
+            }
+        }
+        return selectedTasks;
+    }
+
+    /** Removes selected tasks using their original 0-based indexes and returns them in original order. */
+    public List<Task> removeAtIndexes(List<Integer> indexes) {
+        List<Task> removedTasks = getTasksAtIndexes(indexes);
+        List<Integer> indexesToRemove = new ArrayList<>(indexes);
+        indexesToRemove.sort(Collections.reverseOrder());
+        for (int index : indexesToRemove) {
+            tasks.remove(index);
+        }
+        return removedTasks;
+    }
+
+    /** Restores tasks at their original zero-based indexes after a failed batch save. */
+    public void restoreAtIndexes(List<Integer> indexes, List<Task> restoredTasks) {
+        List<Integer> indexesToRestore = new ArrayList<>(indexes);
+        indexesToRestore.sort(Integer::compareTo);
+        for (int i = 0; i < indexesToRestore.size(); i++) {
+            add(indexesToRestore.get(i), restoredTasks.get(i));
         }
     }
 
