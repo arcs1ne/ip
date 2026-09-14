@@ -23,9 +23,11 @@ public class Main extends Application {
             FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("/view/MainWindow.fxml"));
             AnchorPane ap = fxmlLoader.load();
             Image icon = new Image(this.getClass().getResourceAsStream("/images/logo.png"));
-            Scene scene = new Scene(ap);
+            Scene scene = new Scene(ap, 460, 700);
             stage.setScene(scene);
             stage.setTitle("Tangent");
+            stage.setMinWidth(360);
+            stage.setMinHeight(480);
             stage.getIcons().add(icon);
             fxmlLoader.<MainWindow>getController().setTangent(tangent);
             stage.show();

@@ -29,7 +29,7 @@ public class MainWindow extends AnchorPane {
     private final Image userImage = new Image(this.getClass().getResourceAsStream("/images/ena.jpg"));
     private final Image tangentImage = new Image(this.getClass().getResourceAsStream("/images/mizuki.jpg"));
     private final StringBuilder responseOutput = new StringBuilder();
-    private final Ui ui = new Ui(this::appendResponse);
+    private final Ui ui = new Ui(this::appendResponse, this::appendError);
 
     /** Scrolls the ScrollPane to the bottom whenever the dialog box is resized. */
     @FXML
@@ -43,7 +43,7 @@ public class MainWindow extends AnchorPane {
     }
 
     /**
-     * Creates two dialog boxes, one echoing user input and the other containing Duke's reply and then appends them to
+     * Creates two dialog boxes, one echoing user input and the other containing Tangent's reply and then appends them to
      * the dialog container. Clears the user input after processing.
      */
     @FXML
@@ -57,7 +57,7 @@ public class MainWindow extends AnchorPane {
         String response = responseOutput.toString();
         dialogContainer.getChildren().addAll(
                 DialogBox.getUserDialog(input, userImage),
-                DialogBox.getTangentDialog(response, tangentImage)
+                DialogBox.getTangentDialog(response, tangentImage, response.startsWith("⚠"))
         );
         userInput.clear();
         if (tangent.isExitRequested()) {
@@ -71,5 +71,10 @@ public class MainWindow extends AnchorPane {
             responseOutput.append(System.lineSeparator());
         }
         responseOutput.append(message);
+    }
+
+    /** Appends an error response with a visual warning marker. */
+    private void appendError(String message) {
+        appendResponse("⚠ " + message);
     }
 }
