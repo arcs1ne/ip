@@ -76,7 +76,7 @@ public class DialogBox extends HBox {
     }
 
     /**
-     * Returns the bot's version of the dialog box.
+     * Returns Tangent's dialog box.
      */
     public static DialogBox getTangentDialog(String text, Image img) {
         var db = new DialogBox(text, img);

@@ -43,8 +43,8 @@ public class MainWindow extends AnchorPane {
     }
 
     /**
-     * Creates two dialog boxes, one echoing user input and the other containing Tangent's reply and then appends them to
-     * the dialog container. Clears the user input after processing.
+     * Creates two dialog boxes, one echoing user input and the other containing Tangent's reply and then appends
+     * them to the dialog container. Clears the user input after processing.
      */
     @FXML
     private void handleUserInput() {
@@ -67,7 +67,7 @@ public class MainWindow extends AnchorPane {
 
     /** Appends one formatted command message to the GUI response buffer. */
     private void appendResponse(String message) {
-        if (responseOutput.length() > 0) {
+        if (!responseOutput.isEmpty()) {
             responseOutput.append(System.lineSeparator());
         }
         responseOutput.append(message);
