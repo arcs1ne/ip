@@ -22,10 +22,12 @@ public class Ui {
 
     /** Receives formatted messages for display. */
     private final Consumer<String> output;
+    /** Receives error messages separately when a visual UI wants to highlight them. */
+    private final Consumer<String> errorOutput;
 
     /** Creates a UI that writes messages to standard output. */
     public Ui() {
-        this(System.out::println);
+        this(System.out::println, System.out::println);
     }
 
     /**
@@ -34,7 +36,18 @@ public class Ui {
      * @param output handler that receives each formatted message
      */
     public Ui(Consumer<String> output) {
+        this(output, output);
+    }
+
+    /**
+     * Creates a UI with separate normal and error output handlers.
+     *
+     * @param output handler for normal messages
+     * @param errorOutput handler for error messages
+     */
+    public Ui(Consumer<String> output, Consumer<String> errorOutput) {
         this.output = output;
+        this.errorOutput = errorOutput;
     }
 
     /** Displays the greeting shown when the program starts. */
@@ -57,7 +70,7 @@ public class Ui {
 
     /** Displays an error message from the application. */
     public void showError(String message) {
-        display(message);
+        errorOutput.accept(message);
     }
 
     /** Displays the tasks currently stored in the task list with 1-based indexing. */

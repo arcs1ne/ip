@@ -1,52 +1,64 @@
-.label {
-    background:white;
-    -fx-background-color: derive(blue, 1.5);
-    -fx-border-color: #d55e00 #009e73 #cc79a7 #0072b2;
-    -fx-border-width: 2px;
-    -fx-background-radius: 1em 1em 0 1em;
-    -fx-border-radius: 1em 1em 0 1em;
-    -fx-text-fill: ladder(background, white 49%, black 50%);
-    -fx-padding: 6px;
-    -fx-border-insets: 0px 7px 0px 7px;
-    -fx-background-insets: 0px 7px 0px 7px;
+.dialog-box {
+    -fx-spacing: 9;
+    -fx-padding: 5 8 7 8;
 }
 
-.reply-label {
-    -fx-background-radius: 1em 1em 1em 0;
-    -fx-border-radius: 1em 1em 1em 0;
+.user-dialog { -fx-alignment: BOTTOM_RIGHT; }
+.bot-dialog { -fx-alignment: BOTTOM_LEFT; }
+
+.avatar {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.35), 6, 0.35, 0, 2);
 }
 
-#displayPicture {
-    /* Shadow effect on image. */
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.5, 5, 5);
-
-    /* Change size of image. */
-    -fx-scale-x: 1;
-    -fx-scale-y: 1;
-
-    /* Rotate image clockwise by degrees. */
-    -fx-rotate: 0;
+.message-content {
+    -fx-max-width: 560;
+    -fx-padding: 10 13 10 13;
+    -fx-background-insets: 0;
 }
 
-.reply-label {
-    -fx-background-radius: 1em 1em 1em 0;
-    -fx-border-radius: 1em 1em 1em 0;
+.speaker-name {
 }
 
-.add-label {
-    -fx-background-color: yellow;
+.dialog-label {
+    -fx-wrap-text: true;
+    -fx-line-spacing: 2;
+    -fx-min-width: 0;
+    -fx-padding: 0;
+    -fx-text-alignment: LEFT;
 }
 
-.marked-label {
-    -fx-background-color: palegreen;
+.user-bubble {
+    -fx-background-color: #1a927d;
+    -fx-background-radius: 15 15 4 15;
+    -fx-border-color: transparent;
+    -fx-border-width: 1;
+    -fx-text-fill: #f4fffc;
 }
 
-.delete-label {
-    -fx-background-color: lightpink;
+.user-bubble .speaker-name,
+.user-bubble .dialog-label {
+    -fx-text-fill: #f4fffc;
 }
 
-.reply-label {
-    -fx-background-radius: 1em 1em 1em 0;
-    -fx-border-radius: 1em 1em 1em 0;
+.bot-bubble {
+    -fx-background-color: #19232e;
+    -fx-border-color: #2a3a4a;
+    -fx-border-radius: 15 15 15 4;
+    -fx-border-width: 1;
+    -fx-background-radius: 15 15 15 4;
 }
 
+.bot-bubble .speaker-name,
+.bot-bubble .dialog-label {
+    -fx-text-fill: #e6edf3;
+}
+
+.error-bubble {
+    -fx-background-color: #321f27;
+    -fx-border-color: #e1697d;
+}
+
+.error-bubble .speaker-name,
+.error-bubble .dialog-label {
+    -fx-text-fill: #ffd9df;
+}
