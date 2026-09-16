@@ -1,5 +1,6 @@
 package tangent.parser;
 
+import tangent.exception.ErrorMessages;
 import tangent.exception.TangentException;
 
 /** Contains supported command keywords that the program can parse. */
@@ -35,6 +36,6 @@ public enum CommandTypes {
                 return commandTypes;
             }
         }
-        throw new TangentException("invalid command!");
+        throw new TangentException(ErrorMessages.INVALID_COMMAND_MESSAGE);
     }
 }

@@ -15,11 +15,13 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import tangent.exception.ErrorMessages;
 import tangent.exception.TangentException;
 import tangent.task.Deadline;
 import tangent.task.Event;
 import tangent.task.Task;
 import tangent.task.ToDo;
+
 public class StorageTest {
     @TempDir
     Path tempDir;
@@ -71,7 +73,7 @@ public class StorageTest {
 
         TangentException exception = assertThrows(TangentException.class, storage::load);
 
-        assertEquals("data file contains an unknown task type: X", exception.getMessage());
+        assertEquals(String.format(ErrorMessages.UNKNOWN_STORED_TASK_TYPE_MESSAGE, "X"), exception.getMessage());
     }
 
     @Test
@@ -83,7 +85,7 @@ public class StorageTest {
 
         TangentException exception = assertThrows(TangentException.class, storage::load);
 
-        assertEquals("data file contains an invalid task record: T | 2 | borrow book",
+        assertEquals(String.format(ErrorMessages.INVALID_TASK_RECORD_MESSAGE, "T | 2 | borrow book"),
                 exception.getMessage());
     }
 
@@ -97,8 +99,40 @@ public class StorageTest {
         TangentException exception = assertThrows(TangentException.class, storage::load);
 
         assertEquals(
-                "bad date format :( ensure your dates are in the format "
-                        + "DD/MM/YYYY HHmm (example: 07/06/2026 2200)",
+                ErrorMessages.BAD_DATE_MESSAGE,
                 exception.getMessage());
+    }
+
+    @Test
+    public void load_invalidEventTimeRange_exceptionThrown() throws Exception {
+        Path dataFile = tempDir.resolve("tangent.txt");
+        Files.writeString(dataFile, "E | 0 | meeting | 3/12/2019 1100 | 3/12/2019 0900");
+
+        TangentException exception = assertThrows(TangentException.class, () -> new Storage(
+                dataFile.toString()).load());
+
+        assertTrue(exception.getMessage().startsWith(
+                String.format(ErrorMessages.INVALID_STORED_EVENT_RANGE_MESSAGE, "")));
+    }
+
+    @Test
+    public void load_emptyDescription_exceptionThrown() throws Exception {
+        Path dataFile = tempDir.resolve("tangent.txt");
+        Files.writeString(dataFile, "T | 0 |   ");
+
+        TangentException exception = assertThrows(TangentException.class, () -> new Storage(
+                dataFile.toString()).load());
+
+        assertTrue(exception.getMessage().startsWith(String.format(ErrorMessages.INVALID_TASK_RECORD_MESSAGE, "")));
+    }
+
+    @Test
+    public void save_missingParentDirectory_fileCreated() throws Exception {
+        Path dataFile = tempDir.resolve("nested").resolve("tangent.txt");
+        Storage storage = new Storage(dataFile.toString());
+
+        storage.save(List.of(new ToDo("borrow book")));
+
+        assertEquals("T | 0 | borrow book", Files.readString(dataFile));
     }
 }

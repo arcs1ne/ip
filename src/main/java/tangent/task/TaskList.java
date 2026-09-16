@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
+import tangent.exception.ErrorMessages;
 import tangent.exception.TangentException;
 
 /**
@@ -57,7 +58,7 @@ public class TaskList {
     public void validateIndexes(List<Integer> indexes) throws TangentException {
         for (int index : indexes) {
             if (index < 0 || index >= tasks.size()) {
-                throw new TangentException("please provide a valid task number!");
+                throw new TangentException(ErrorMessages.INVALID_TASK_INDEX_MESSAGE);
             }
         }
     }

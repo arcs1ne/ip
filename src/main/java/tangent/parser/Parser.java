@@ -17,6 +17,7 @@ import tangent.command.FindCommand;
 import tangent.command.ListCommand;
 import tangent.command.MarkCommand;
 import tangent.command.UnmarkCommand;
+import tangent.exception.ErrorMessages;
 import tangent.exception.TangentException;
 import tangent.task.Deadline;
 import tangent.task.Event;
@@ -37,13 +38,6 @@ public class Parser {
     private static final String FROM_MARKER = " /from ";
     /** The marker to identify when an end time should follow in an {@code Event} object. */
     private static final String TO_MARKER = " /to ";
-    private static final String DEADLINE_FORMAT_MESSAGE = "please use: deadline DESCRIPTION /by TIME";
-    private static final String EVENT_FORMAT_MESSAGE = "please use: event DESCRIPTION /from START /to END";
-    private static final String BAD_DATE_MESSAGE = "bad date format :( ensure your dates are in the format "
-            + "DD/MM/YYYY HHmm (example: 07/06/2026 2200)";
-    private static final String INVALID_TASK_INDEX_MESSAGE = "please provide a valid task number!";
-    private static final String TASK_INDEX_FORMAT_MESSAGE = "please provide task numbers or ranges separated by "
-            + "spaces, (example: delete 1 4-6)";
 
     /**
      * Converts a complete user command into the command object that performs its action.
@@ -62,21 +56,21 @@ public class Parser {
             case UNMARK:
                 return new UnmarkCommand(parseTaskIndexes(inputs));
             case FIND:
-                requireArgument(inputs, "please provide a keyword to search for!");
+                requireArgument(inputs, ErrorMessages.MISSING_SEARCH_KEYWORD_MESSAGE);
                 return new FindCommand(inputs[1].trim());
             case DELETE:
                 return new DeleteCommand(parseTaskIndexes(inputs));
             case TODO:
             case DEADLINE:
             case EVENT:
-                requireArgument(inputs, "please provide a task description!");
+                requireArgument(inputs, ErrorMessages.MISSING_TASK_DESCRIPTION_MESSAGE);
                 return new AddCommand(parseTask(inputs[1], type));
             case LIST:
                 return new ListCommand();
             case BYE:
                 return new ExitCommand();
             default:
-                throw new TangentException("invalid command!");
+                throw new TangentException(ErrorMessages.INVALID_COMMAND_MESSAGE);
         }
     }
 
@@ -97,7 +91,7 @@ public class Parser {
      */
     public static List<Integer> parseTaskIndexes(String[] inputs) throws TangentException {
         if (inputs.length < 2 || inputs[1].trim().isEmpty()) {
-            throw new TangentException(INVALID_TASK_INDEX_MESSAGE);
+            throw new TangentException(ErrorMessages.INVALID_TASK_INDEX_MESSAGE);
         }
         List<Integer> taskIndexes = new ArrayList<>();
         Set<Integer> seenIndexes = new HashSet<>();
@@ -113,7 +107,7 @@ public class Parser {
             throws TangentException {
         // Checks for cases without a start index (delete -3) or extra leading zero (delete 04)
         if (selector.matches("-[0-9]+") || selector.matches("0[0-9]*")) {
-            throw new TangentException(INVALID_TASK_INDEX_MESSAGE);
+            throw new TangentException(ErrorMessages.INVALID_TASK_INDEX_MESSAGE);
         }
         // Checks for cases with a single index (e.g. delete 2 / delete 20)
         if (selector.matches("[1-9][0-9]*")) {
@@ -122,18 +116,18 @@ public class Parser {
         }
         // Checks for cases without a valid separator (e.g. delete 3&4)
         if (!selector.contains("-") && !selector.contains(",")) {
-            throw new TangentException(INVALID_TASK_INDEX_MESSAGE);
+            throw new TangentException(ErrorMessages.INVALID_TASK_INDEX_MESSAGE);
         }
         // Checks for cases that are not a range bounded by 2 integers (e.g. delete 2a-3)
         if (!selector.matches("[1-9][0-9]*-[1-9][0-9]*")) {
-            throw new TangentException(TASK_INDEX_FORMAT_MESSAGE);
+            throw new TangentException(ErrorMessages.TASK_INDEX_FORMAT_MESSAGE);
         }
         String[] range = selector.split("-", -1);
         int start = parseTaskNumber(range[0]);
         int end = parseTaskNumber(range[1]);
         // Checks for cases that have a start index greater than the end index (e.g. delete 6-4)
         if (start >= end) {
-            throw new TangentException(INVALID_TASK_INDEX_MESSAGE);
+            throw new TangentException(ErrorMessages.INVALID_TASK_INDEX_MESSAGE);
         }
         // Adds all task numbers within the range
         for (int taskNumber = start; taskNumber <= end; taskNumber++) {
@@ -150,7 +144,7 @@ public class Parser {
             throws TangentException {
         int taskIndex = taskNumber - 1;
         if (!seenIndexes.add(taskIndex)) {
-            throw new TangentException(INVALID_TASK_INDEX_MESSAGE);
+            throw new TangentException(ErrorMessages.INVALID_TASK_INDEX_MESSAGE);
         }
         taskIndexes.add(taskIndex);
     }
@@ -160,7 +154,7 @@ public class Parser {
         try {
             return Integer.parseInt(taskNumber);
         } catch (NumberFormatException e) {
-            throw new TangentException(INVALID_TASK_INDEX_MESSAGE);
+            throw new TangentException(ErrorMessages.INVALID_TASK_INDEX_MESSAGE);
         }
     }
 
@@ -186,7 +180,7 @@ public class Parser {
             case EVENT:
                 return parseEvent(details);
             default:
-                throw new TangentException("unknown task type!");
+                throw new TangentException(ErrorMessages.UNKNOWN_TASK_TYPE_MESSAGE);
         }
     }
 
@@ -198,12 +192,12 @@ public class Parser {
     private static Deadline parseDeadline(String details) throws TangentException {
         int byIndex = details.indexOf(BY_MARKER);
         if (byIndex <= 0 || details.indexOf(BY_MARKER, byIndex + BY_MARKER.length()) != -1) {
-            throw new TangentException(DEADLINE_FORMAT_MESSAGE);
+            throw new TangentException(ErrorMessages.DEADLINE_FORMAT_MESSAGE);
         }
         String description = details.substring(0, byIndex).trim();
         String by = details.substring(byIndex + BY_MARKER.length()).trim();
         if (description.isEmpty() || by.isEmpty()) {
-            throw new TangentException(DEADLINE_FORMAT_MESSAGE);
+            throw new TangentException(ErrorMessages.DEADLINE_FORMAT_MESSAGE);
         }
         validateDescription(description);
         return new Deadline(description, parseDateTime(by));
@@ -224,19 +218,19 @@ public class Parser {
         boolean hasRepeatedToMarker = details.indexOf(TO_MARKER,
                 toIndex + TO_MARKER.length()) != -1;
         if (!hasValidMarkerOrder || hasRepeatedFromMarker || hasRepeatedToMarker) {
-            throw new TangentException(EVENT_FORMAT_MESSAGE);
+            throw new TangentException(ErrorMessages.EVENT_FORMAT_MESSAGE);
         }
         String description = details.substring(0, fromIndex).trim();
         String from = details.substring(fromIndex + FROM_MARKER.length(), toIndex).trim();
         String to = details.substring(toIndex + TO_MARKER.length()).trim();
         if (description.isEmpty() || from.isEmpty() || to.isEmpty()) {
-            throw new TangentException(EVENT_FORMAT_MESSAGE);
+            throw new TangentException(ErrorMessages.EVENT_FORMAT_MESSAGE);
         }
         validateDescription(description);
         LocalDateTime fromDateTime = parseDateTime(from);
         LocalDateTime toDateTime = parseDateTime(to);
         if (!toDateTime.isAfter(fromDateTime)) {
-            throw new TangentException("your end time must be later than your start time!");
+            throw new TangentException(ErrorMessages.END_TIME_ORDER_MESSAGE);
         }
         return new Event(description, fromDateTime, toDateTime);
     }
@@ -248,7 +242,7 @@ public class Parser {
      */
     private static void validateDescription(String description) throws TangentException {
         if (description.contains(FIELD_SEPARATOR)) {
-            throw new TangentException("task descriptions cannot contain " + FIELD_SEPARATOR + "!");
+            throw new TangentException(String.format(ErrorMessages.DESCRIPTION_SEPARATOR_MESSAGE, FIELD_SEPARATOR));
         }
     }
 
@@ -261,7 +255,7 @@ public class Parser {
         try {
             return LocalDateTime.parse(input.trim(), INPUT_FORMATTER);
         } catch (DateTimeParseException e) {
-            throw new TangentException(BAD_DATE_MESSAGE);
+            throw new TangentException(ErrorMessages.BAD_DATE_MESSAGE);
         }
     }
 }
