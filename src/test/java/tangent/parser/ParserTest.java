@@ -15,6 +15,7 @@ import tangent.command.FindCommand;
 import tangent.command.ListCommand;
 import tangent.command.MarkCommand;
 import tangent.command.UnmarkCommand;
+import tangent.exception.ErrorMessages;
 import tangent.exception.TangentException;
 
 
@@ -76,31 +77,31 @@ public class ParserTest {
     @Test
     public void parseFind_missingKeyword_exceptionThrown() {
         TangentException exception = assertThrows(TangentException.class, () -> Parser.parse("find"));
-        assertEquals("please provide a keyword to search for!", exception.getMessage());
+        assertEquals(ErrorMessages.MISSING_SEARCH_KEYWORD_MESSAGE, exception.getMessage());
     }
 
     @Test
     public void parse_unknownCommand_exceptionThrown() {
         TangentException exception = assertThrows(TangentException.class, () -> Parser.parse("remind me"));
-        assertEquals("invalid command!", exception.getMessage());
+        assertEquals(ErrorMessages.INVALID_COMMAND_MESSAGE, exception.getMessage());
     }
 
     /** Verifies every invalid task-number format produces the same user-facing message. */
     private void assertInvalidTaskNumber(String input) {
         TangentException exception = assertThrows(TangentException.class, () -> Parser.parse(input));
-        assertEquals("please provide a valid task number!", exception.getMessage());
+        assertEquals(ErrorMessages.INVALID_TASK_INDEX_MESSAGE, exception.getMessage());
     }
 
     /** Verifies every task-creation command requires a description. */
     private void assertMissingDescription(String input) {
         TangentException exception = assertThrows(TangentException.class, () -> Parser.parse(input));
-        assertEquals("please provide a task description!", exception.getMessage());
+        assertEquals(ErrorMessages.MISSING_TASK_DESCRIPTION_MESSAGE, exception.getMessage());
     }
 
     /** Verifies malformed selectors produce the selector-format help message. */
     private void assertInvalidSelectorFormat(String input) {
         TangentException exception = assertThrows(TangentException.class, () -> Parser.parse(input));
-        assertEquals("please provide task numbers or ranges separated by spaces, (example: delete 1 4-6)",
+        assertEquals(ErrorMessages.TASK_INDEX_FORMAT_MESSAGE,
                 exception.getMessage());
     }
 }

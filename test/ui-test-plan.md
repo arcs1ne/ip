@@ -89,6 +89,47 @@ Matches the complete expected-output block for this test case above.
 
 - **Result:** PASS
 
+## Test session record — 2026-09-14 (storage error handling)
+
+Java 25.0.4 direct console compilation + exact comparison passed all three planned cases in isolated `ui-test-storage-error-workspace-3`.
+
+### Attempted tests: all planned cases
+
+- **Aim:** Verify storage-backed create, reload, mutation, invalid-date handling, and status persistence after atomic-save changes.
+- **Console input sent:**
+
+```text
+Case 1: todo borrow book; deadline return book /by 2/12/2019 1800; event project meeting /from 3/12/2019 0900 /to 3/12/2019 1100; list; bye
+Case 2: mark 2-3; unmark 2-3; delete 1 3; deadline impossible /by 31/2/2019 1800; list; bye
+Case 3: unmark 1; list; bye
+```
+
+- **Expected output:**
+
+```text
+Complete expected-output blocks for corresponding planned cases above.
+```
+
+- **Actual output:**
+
+```text
+Exact match for all three cases; all processes exited with code 0.
+```
+
+- **Result:** PASS (3 cases)
+
+## Test session record — 2026-09-14 (GUI polish)
+
+Java 25.0.4 direct console compilation + isolated execution passed all three planned cases in order. Console UI behavior stayed unchanged.
+
+### Attempted tests: all planned cases
+
+- **Aim:** Verify existing console behavior after GUI-only changes.
+- **Console input sent:** Exact inputs from each planned test case above, in declared order.
+- **Expected output:** Complete expected-output block for each corresponding case above.
+- **Actual output:** Exact match for each case; all processes exited with code 0.
+- **Result:** PASS (3 cases)
+
 ## Test session record — 2026-09-12 (mass operations)
 
 Java 25.0.4 direct console compilation + exact comparison passed all three current UI-plan cases in order in isolated `ui-test-batch-plan-workspace-7`.

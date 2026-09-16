@@ -3,6 +3,7 @@ package tangent;
 import java.util.Scanner;
 
 import tangent.command.Command;
+import tangent.exception.ErrorMessages;
 import tangent.exception.TangentException;
 import tangent.parser.Parser;
 import tangent.storage.Storage;
@@ -49,7 +50,7 @@ public class Tangent {
     /** Processes one console command and returns whether the application should exit. */
     private boolean processCommand(String input) {
         if (input.isEmpty()) {
-            ui.showError("please enter a command or task description!");
+            ui.showError(ErrorMessages.EMPTY_INPUT_MESSAGE);
             ui.showDivider();
             return false;
         }
@@ -89,7 +90,7 @@ public class Tangent {
                 tasks = loadTasks();
             }
             if (input.isBlank()) {
-                commandUi.showError("please enter a command or task description!");
+                commandUi.showError(ErrorMessages.EMPTY_INPUT_MESSAGE);
                 return;
             }
             Command command = Parser.parse(input.trim());

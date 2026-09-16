@@ -2,8 +2,11 @@ package tangent.storage;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -11,6 +14,7 @@ import java.time.format.ResolverStyle;
 import java.util.ArrayList;
 import java.util.List;
 
+import tangent.exception.ErrorMessages;
 import tangent.exception.TangentException;
 import tangent.task.Deadline;
 import tangent.task.Event;
@@ -48,7 +52,7 @@ public class Storage {
      * @param filePath The path of the file used to store tasks.
      */
     public Storage(String filePath) {
-        this.dataFile = Path.of(filePath);
+        this.dataFile = Path.of(filePath).toAbsolutePath().normalize();
     }
 
     /**
@@ -60,6 +64,9 @@ public class Storage {
         ArrayList<Task> tasks = new ArrayList<>();
         try {
             Files.createDirectories(dataFile.getParent());
+            if (Files.isDirectory(dataFile)) {
+                throw new TangentException(String.format(ErrorMessages.DATA_PATH_DIRECTORY_MESSAGE, dataFile));
+            }
             if (Files.notExists(dataFile)) {
                 Files.createFile(dataFile);
             }
@@ -69,8 +76,10 @@ public class Storage {
                     tasks.add(toTask(line));
                 }
             }
-        } catch (IOException e) {
-            throw new TangentException("can't find the file :(");
+        } catch (TangentException e) {
+            throw e;
+        } catch (IOException | SecurityException e) {
+            throw storageException("read", e);
         }
         return tasks;
     }
@@ -82,14 +91,39 @@ public class Storage {
      * @throws TangentException if the data file cannot be written to.
      */
     public void save(List<Task> tasks) throws TangentException {
+        if (tasks == null) {
+            throw new TangentException(ErrorMessages.MISSING_TASK_LIST_MESSAGE);
+        }
         List<String> records = new ArrayList<>();
         for (Task task : tasks) {
             records.add(toRecord(task));
         }
+        Path temporaryFile = null;
         try {
-            Files.write(dataFile, records);
-        } catch (IOException e) {
-            throw new TangentException("unable to save your tasks :(");
+            Files.createDirectories(dataFile.getParent());
+            if (Files.isDirectory(dataFile)) {
+                throw new TangentException(String.format(ErrorMessages.DATA_PATH_DIRECTORY_MESSAGE, dataFile));
+            }
+            temporaryFile = Files.createTempFile(dataFile.getParent(), dataFile.getFileName().toString(), ".tmp");
+            Files.write(temporaryFile, records, StandardCharsets.UTF_8);
+            try {
+                Files.move(temporaryFile, dataFile, StandardCopyOption.ATOMIC_MOVE,
+                        StandardCopyOption.REPLACE_EXISTING);
+            } catch (AtomicMoveNotSupportedException e) {
+                Files.move(temporaryFile, dataFile, StandardCopyOption.REPLACE_EXISTING);
+            }
+        } catch (TangentException e) {
+            throw e;
+        } catch (IOException | SecurityException e) {
+            throw storageException("save", e);
+        } finally {
+            if (temporaryFile != null) {
+                try {
+                    Files.deleteIfExists(temporaryFile);
+                } catch (IOException | SecurityException ignored) {
+                    // Preserve the original save result; leftover temporary files are harmless.
+                }
+            }
         }
     }
 
@@ -103,7 +137,10 @@ public class Storage {
         boolean hasValidStatus = data.length >= 2
                 && (data[1].equals(INCOMPLETE_STATUS) || data[1].equals(COMPLETE_STATUS));
         if (data.length < 3 || !hasValidStatus) {
-            throw new TangentException("data file contains an invalid task record: " + line);
+            throw new TangentException(String.format(ErrorMessages.INVALID_TASK_RECORD_MESSAGE, line));
+        }
+        if (data[2].trim().isEmpty()) {
+            throw new TangentException(String.format(ErrorMessages.INVALID_TASK_RECORD_MESSAGE, line));
         }
         Task task;
         switch (data[0]) {
@@ -117,10 +154,15 @@ public class Storage {
                 break;
             case EVENT_TYPE:
                 requireFieldCount(data, 5, line);
-                task = new Event(data[2], parseFileDateTime(data[3]), parseFileDateTime(data[4]));
+                LocalDateTime from = parseFileDateTime(data[3]);
+                LocalDateTime to = parseFileDateTime(data[4]);
+                if (!to.isAfter(from)) {
+                    throw new TangentException(String.format(ErrorMessages.INVALID_STORED_EVENT_RANGE_MESSAGE, line));
+                }
+                task = new Event(data[2], from, to);
                 break;
             default:
-                throw new TangentException("data file contains an unknown task type: " + data[0]);
+                throw new TangentException(String.format(ErrorMessages.UNKNOWN_STORED_TASK_TYPE_MESSAGE, data[0]));
         }
         if (data[1].equals(COMPLETE_STATUS)) {
             task.markAsDone();
@@ -131,21 +173,26 @@ public class Storage {
     /**
      * Converts a task into one saved record of the correct format in the data file.
      */
-    private String toRecord(Task task) {
-        assert task != null : "saved task must exist";
+    private String toRecord(Task task) throws TangentException {
+        if (task == null || task.getDescription() == null || task.getDescription().trim().isEmpty()
+                || task.getDescription().contains(FIELD_SEPARATOR)) {
+            throw new TangentException(ErrorMessages.INVALID_TASK_TO_SAVE_MESSAGE);
+        }
         String status = task.isDone() ? COMPLETE_STATUS : INCOMPLETE_STATUS;
         if (task instanceof ToDo) {
             return TODO_TYPE + FIELD_SEPARATOR + status + FIELD_SEPARATOR + task.getDescription();
         }
-        if (task instanceof Deadline deadline) {
+        if (task instanceof Deadline deadline && deadline.getBy() != null) {
             return DEADLINE_TYPE + FIELD_SEPARATOR + status + FIELD_SEPARATOR + task.getDescription()
                     + FIELD_SEPARATOR + deadline.getBy().format(FILE_DATE_FORMATTER);
         }
-        assert task instanceof Event : "task must be ToDo, Deadline, or Event";
-        Event event = (Event) task;
-        return EVENT_TYPE + FIELD_SEPARATOR + status + FIELD_SEPARATOR + task.getDescription()
-                + FIELD_SEPARATOR + event.getFrom().format(FILE_DATE_FORMATTER)
-                + FIELD_SEPARATOR + event.getTo().format(FILE_DATE_FORMATTER);
+        if (task instanceof Event event && event.getFrom() != null && event.getTo() != null
+                && event.getTo().isAfter(event.getFrom())) {
+            return EVENT_TYPE + FIELD_SEPARATOR + status + FIELD_SEPARATOR + task.getDescription()
+                    + FIELD_SEPARATOR + event.getFrom().format(FILE_DATE_FORMATTER)
+                    + FIELD_SEPARATOR + event.getTo().format(FILE_DATE_FORMATTER);
+        }
+        throw new TangentException(ErrorMessages.INVALID_TASK_TO_SAVE_MESSAGE);
     }
 
     /**
@@ -157,7 +204,7 @@ public class Storage {
      */
     private void requireFieldCount(String[] data, int expectedCount, String line) throws TangentException {
         if (data.length != expectedCount) {
-            throw new TangentException("data file contains an invalid task record: " + line);
+            throw new TangentException(String.format(ErrorMessages.INVALID_TASK_RECORD_MESSAGE, line));
         }
     }
 
@@ -170,9 +217,15 @@ public class Storage {
         try {
             return LocalDateTime.parse(input.trim(), FILE_DATE_FORMATTER);
         } catch (DateTimeParseException e) {
-            throw new TangentException("bad date format :( ensure your dates are in the format "
-                    + "DD/MM/YYYY HHmm (example: 07/06/2026 2200)");
+            throw new TangentException(ErrorMessages.BAD_DATE_MESSAGE);
         }
+    }
+
+    /** Creates a user-facing storage error while retaining operation context. */
+    private TangentException storageException(String operation, Exception exception) {
+        String detail = exception.getMessage() == null ? exception.getClass().getSimpleName() : exception.getMessage();
+        return new TangentException(String.format(ErrorMessages.STORAGE_OPERATION_FAILURE_MESSAGE,
+                operation, dataFile, detail));
     }
 }
 
