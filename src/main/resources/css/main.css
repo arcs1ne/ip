@@ -51,6 +51,11 @@
     -fx-border-width: 1 0 0 0;
 }
 
+.command-hint {
+    -fx-text-fill: #7d8996;
+    -fx-font-size: 10px;
+}
+
 .text-field {
     -fx-background-color: #0d1218;
     -fx-background-radius: 12;
