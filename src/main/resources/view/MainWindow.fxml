@@ -13,16 +13,16 @@
 
 <AnchorPane stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tangent.gui.MainWindow">
     <children>
-        <VBox spacing="2" styleClass="header" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <VBox prefHeight="29.0" prefWidth="315.0" spacing="2" styleClass="header" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
                 <HBox alignment="CENTER_LEFT" spacing="10">
                     <children>
-                        <Label styleClass="header-title" text="TANGENT">
+                        <Label styleClass="header-title" text="Tangent">
                      <font>
                         <Font name="Google Sans SemiBold" size="19.0" />
                      </font></Label>
                         <Region HBox.hgrow="ALWAYS" />
-                      <Label styleClass="header-subtitle" text="your friendly chatbot">
+                      <Label styleClass="header-subtitle" text="your chill and friendly chatbot">
                      <font>
                         <Font name="Comic Sans MS" size="12.0" />
                      </font>
@@ -31,7 +31,7 @@
                 </HBox>
             </children>
         </VBox>
-        <ScrollPane fx:id="scrollPane" fitToWidth="true" hbarPolicy="NEVER" layoutY="53.333333333333336" prefHeight="121.0" prefWidth="315.0" vbarPolicy="AS_NEEDED" AnchorPane.bottomAnchor="72.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="53.0">
+        <ScrollPane fx:id="scrollPane" fitToWidth="true" hbarPolicy="NEVER" layoutY="51.333333333333336" prefHeight="124.0" prefWidth="315.0" vbarPolicy="AS_NEEDED" AnchorPane.bottomAnchor="72.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="51.0">
             <content>
                 <VBox fx:id="dialogContainer" fillWidth="true" styleClass="transcript" />
             </content>
