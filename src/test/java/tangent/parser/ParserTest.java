@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,9 @@ import tangent.command.MarkCommand;
 import tangent.command.UnmarkCommand;
 import tangent.exception.ErrorMessages;
 import tangent.exception.TangentException;
+import tangent.task.Deadline;
+import tangent.task.Event;
+import tangent.task.ToDo;
 
 
 
@@ -84,6 +88,114 @@ public class ParserTest {
     public void parse_unknownCommand_exceptionThrown() {
         TangentException exception = assertThrows(TangentException.class, () -> Parser.parse("remind me"));
         assertEquals(ErrorMessages.INVALID_COMMAND_MESSAGE, exception.getMessage());
+    }
+
+    @Test
+    public void parseTask_todoTrimsDescription() throws TangentException {
+        ToDo task = assertInstanceOf(ToDo.class, Parser.parseTask("  read book  ", CommandTypes.TODO));
+
+        assertEquals("read book", task.getDescription());
+    }
+
+    @Test
+    public void parseTask_deadlineParsesDescriptionAndDate() throws TangentException {
+        Deadline task = assertInstanceOf(Deadline.class,
+                Parser.parseTask("return book /by 2/12/2019 1800", CommandTypes.DEADLINE));
+
+        assertEquals("return book", task.getDescription());
+        assertEquals(LocalDateTime.of(2019, 12, 2, 18, 0), task.getBy());
+    }
+
+    @Test
+    public void parseTask_eventParsesDescriptionAndTimes() throws TangentException {
+        Event task = assertInstanceOf(Event.class,
+                Parser.parseTask("project meeting /from 3/12/2019 0900 /to 3/12/2019 1100", CommandTypes.EVENT));
+
+        assertEquals("project meeting", task.getDescription());
+        assertEquals(LocalDateTime.of(2019, 12, 3, 9, 0), task.getFrom());
+        assertEquals(LocalDateTime.of(2019, 12, 3, 11, 0), task.getTo());
+    }
+
+    @Test
+    public void parseTask_unknownType_throwsUnknownTaskType() {
+        assertExceptionMessage(ErrorMessages.UNKNOWN_TASK_TYPE_MESSAGE, () -> Parser.parseTask(
+                "some details", CommandTypes.LIST));
+    }
+
+    @Test
+    public void parseTask_descriptionWithFieldSeparator_throwsDescriptionError() {
+        String expectedMessage = String.format(ErrorMessages.DESCRIPTION_SEPARATOR_MESSAGE, " | ");
+        assertExceptionMessage(expectedMessage, () -> Parser.parseTask(
+                "buy | milk", CommandTypes.TODO));
+    }
+
+    @Test
+    public void parseTask_deadlineMalformedDetails_throwsDeadlineFormatError() {
+        assertExceptionMessage(ErrorMessages.DEADLINE_FORMAT_MESSAGE, () -> Parser.parseTask(
+                "return book", CommandTypes.DEADLINE));
+        assertExceptionMessage(ErrorMessages.DEADLINE_FORMAT_MESSAGE, () -> Parser.parseTask(
+                "return book /by", CommandTypes.DEADLINE));
+        assertExceptionMessage(ErrorMessages.DEADLINE_FORMAT_MESSAGE, () -> Parser.parseTask(
+                "return /by 2/12/2019 1800 /by 3/12/2019 1800", CommandTypes.DEADLINE));
+    }
+
+    @Test
+    public void parseTask_eventMalformedDetails_throwsEventFormatError() {
+        assertExceptionMessage(ErrorMessages.EVENT_FORMAT_MESSAGE, () -> Parser.parseTask(
+                "meeting", CommandTypes.EVENT));
+        assertExceptionMessage(ErrorMessages.EVENT_FORMAT_MESSAGE, () -> Parser.parseTask(
+                "meeting /to 3/12/2019 1100 /from 3/12/2019 0900", CommandTypes.EVENT));
+        assertExceptionMessage(ErrorMessages.EVENT_FORMAT_MESSAGE, () -> Parser.parseTask(
+                "meeting /from 3/12/2019 0900 /to", CommandTypes.EVENT));
+        assertExceptionMessage(ErrorMessages.EVENT_FORMAT_MESSAGE, () -> Parser.parseTask(
+                "meeting /from 3/12/2019 0900 /from 3/12/2019 1000 /to 3/12/2019 1100",
+                CommandTypes.EVENT));
+        assertExceptionMessage(ErrorMessages.EVENT_FORMAT_MESSAGE, () -> Parser.parseTask(
+                "meeting /from 3/12/2019 0900 /to 3/12/2019 1100 /to 3/12/2019 1200", CommandTypes.EVENT));
+    }
+
+    @Test
+    public void parseTask_invalidDate_throwsBadDateError() {
+        assertExceptionMessage(ErrorMessages.BAD_DATE_MESSAGE, () -> Parser.parseTask(
+                "return book /by 31/2/2019 1800", CommandTypes.DEADLINE));
+        assertExceptionMessage(ErrorMessages.BAD_DATE_MESSAGE, () -> Parser.parseTask(
+                "meeting /from 3/12/2019 0900 /to 2560", CommandTypes.EVENT));
+    }
+
+    @Test
+    public void parseTask_eventEndNotAfterStart_throwsOrderError() {
+        assertExceptionMessage(ErrorMessages.END_TIME_ORDER_MESSAGE, () -> Parser.parseTask(
+                "meeting /from 3/12/2019 0900 /to 3/12/2019 0900", CommandTypes.EVENT));
+        assertExceptionMessage(ErrorMessages.END_TIME_ORDER_MESSAGE, () -> Parser.parseTask(
+                "meeting /from 3/12/2019 0900 /to 2/12/2019 1100", CommandTypes.EVENT));
+    }
+
+    @Test
+    public void parseTaskIndexes_missingInputs_throwsInvalidIndex() {
+        assertExceptionMessage(ErrorMessages.INVALID_TASK_INDEX_MESSAGE, () -> Parser.parseTaskIndexes(
+                new String[]{"delete"}));
+        assertExceptionMessage(ErrorMessages.INVALID_TASK_INDEX_MESSAGE, () -> Parser.parseTaskIndexes(
+                new String[]{"delete", "   "}));
+    }
+
+    @Test
+    public void parseTaskIndexes_largeNumberOverflow_throwsInvalidIndex() {
+        assertExceptionMessage(ErrorMessages.INVALID_TASK_INDEX_MESSAGE, () -> Parser.parseTaskIndexes(
+                new String[]{"delete", "2147483648"}));
+    }
+
+    @Test
+    public void parse_findCommand_returnsFindCommand() throws TangentException {
+        assertInstanceOf(FindCommand.class, Parser.parse("find   book"));
+    }
+
+    private void assertExceptionMessage(String expectedMessage, ThrowingAction action) {
+        TangentException exception = assertThrows(TangentException.class, action::run);
+        assertEquals(expectedMessage, exception.getMessage());
+    }
+
+    private interface ThrowingAction {
+        void run() throws TangentException;
     }
 
     /** Verifies every invalid task-number format produces the same user-facing message. */

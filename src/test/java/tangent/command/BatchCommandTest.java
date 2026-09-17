@@ -1,9 +1,13 @@
 package tangent.command;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -46,5 +50,126 @@ public class BatchCommandTest {
 
         assertFalse(tasks.get(0).isDone());
         assertFalse(tasks.get(1).isDone());
+    }
+
+    @Test
+    public void addCommand_successfullyAddsSavesAndReportsTask() throws Exception {
+        Path dataFile = tempDir.resolve("tangent.txt");
+        TaskList tasks = new TaskList();
+        ToDo task = new ToDo("read book");
+        List<String> messages = new ArrayList<>();
+
+        new AddCommand(task).execute(tasks, new Ui(messages::add), new Storage(dataFile.toString()));
+
+        assertEquals(List.of(task), tasks.toList());
+        assertEquals(List.of("got it! you have a new task: ", "[T][ ] read book",
+                "you now have 1 task in the list!"), messages);
+        assertEquals(List.of("T | 0 | read book"), Files.readAllLines(dataFile));
+    }
+
+    @Test
+    public void addCommand_saveFailure_removesAddedTask() {
+        TaskList tasks = new TaskList(new ToDo("existing"));
+        Storage storage = new Storage(tempDir.toString());
+
+        assertThrows(TangentException.class, () -> new AddCommand(new ToDo("new")).execute(
+                tasks, new Ui(_ -> { }), storage));
+
+        assertEquals("existing", tasks.get(0).getDescription());
+        assertEquals(1, tasks.size());
+    }
+
+    @Test
+    public void deleteCommand_successfullyRemovesSelectedTasksAndReportsThem() throws Exception {
+        Path dataFile = tempDir.resolve("tangent.txt");
+        ToDo first = new ToDo("first");
+        ToDo second = new ToDo("second");
+        ToDo third = new ToDo("third");
+        TaskList tasks = new TaskList(first, second, third);
+        List<String> messages = new ArrayList<>();
+
+        new DeleteCommand(List.of(0, 2)).execute(tasks, new Ui(messages::add), new Storage(dataFile.toString()));
+
+        assertEquals(List.of(second), tasks.toList());
+        assertEquals(List.of("got it! i've removed these tasks:", "[T][ ] first", "[T][ ] third",
+                "removed 2 tasks, 1 task(s) remaining!"), messages);
+        assertEquals(List.of("T | 0 | second"), Files.readAllLines(dataFile));
+    }
+
+    @Test
+    public void deleteCommand_invalidIndex_doesNotMutateOrReport() {
+        TaskList tasks = new TaskList(new ToDo("first"));
+        List<String> messages = new ArrayList<>();
+
+        assertThrows(TangentException.class, () -> new DeleteCommand(List.of(1)).execute(
+                tasks, new Ui(messages::add), new Storage(tempDir.resolve("tangent.txt").toString())));
+
+        assertEquals(1, tasks.size());
+        assertTrue(messages.isEmpty());
+    }
+
+    @Test
+    public void markAndUnmarkCommands_successfullyChangeStatusesAndReportTasks() throws TangentException {
+        TaskList tasks = new TaskList(new ToDo("first"), new ToDo("second"), new ToDo("third"));
+        Storage storage = new Storage(tempDir.resolve("tangent.txt").toString());
+        List<String> markMessages = new ArrayList<>();
+
+        new MarkCommand(List.of(2, 0)).execute(tasks, new Ui(markMessages::add), storage);
+
+        assertTrue(tasks.get(0).isDone());
+        assertFalse(tasks.get(1).isDone());
+        assertTrue(tasks.get(2).isDone());
+        assertEquals(List.of("i've marked 2 tasks as done!", "[T][X] first", "[T][X] third"), markMessages);
+
+        List<String> unmarkMessages = new ArrayList<>();
+        new UnmarkCommand(List.of(0)).execute(tasks, new Ui(unmarkMessages::add), storage);
+
+        assertFalse(tasks.get(0).isDone());
+        assertEquals(List.of("i've marked 1 task as undone!", "[T][ ] first"), unmarkMessages);
+    }
+
+    @Test
+    public void statusCommand_saveFailure_restoresOriginalStatus() {
+        ToDo task = new ToDo("first");
+        task.markAsDone();
+        TaskList tasks = new TaskList(task);
+
+        assertThrows(TangentException.class, () -> new UnmarkCommand(List.of(0)).execute(
+                tasks, new Ui(_ -> { }), new Storage(tempDir.toString())));
+
+        assertTrue(task.isDone());
+    }
+
+    @Test
+    public void findAndListCommands_reportMatchingAndAllTasks() {
+        TaskList tasks = new TaskList(new ToDo("read book"), new ToDo("watch movie"));
+        List<String> findMessages = new ArrayList<>();
+        List<String> listMessages = new ArrayList<>();
+        Ui findUi = new Ui(findMessages::add);
+        Ui listUi = new Ui(listMessages::add);
+
+        new FindCommand("BOOK").execute(tasks, findUi, null);
+        new ListCommand().execute(tasks, listUi, null);
+
+        assertEquals(List.of("here are the tasks matching the keyword BOOK:", "here are your current tasks!",
+                "1. [T][ ] read book"), findMessages);
+        assertEquals(List.of("here are your current tasks!", "1. [T][ ] read book", "2. [T][ ] watch movie"),
+                listMessages);
+    }
+
+    @Test
+    public void exitCommand_isExitAndReportsGoodbye() {
+        List<String> messages = new ArrayList<>();
+        ExitCommand command = new ExitCommand();
+
+        command.execute(new TaskList(), new Ui(messages::add), null);
+
+        assertTrue(command.isExit());
+        assertEquals(List.of("bye o/ hope to see you again soon"), messages);
+    }
+
+    @Test
+    public void nonExitCommands_reportNotExit() {
+        assertFalse(new ListCommand().isExit());
     }
 }
