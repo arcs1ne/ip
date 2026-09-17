@@ -5,7 +5,7 @@ public final class ErrorMessages {
     /** Error shown when no command or task description is entered. */
     public static final String EMPTY_INPUT_MESSAGE = "please enter a command or task description!";
     /** Error shown when a command keyword is not recognized. */
-    public static final String INVALID_COMMAND_MESSAGE = "invalid command!";
+    public static final String INVALID_COMMAND_MESSAGE = "this command doesn't exist :(";
     /** Error shown when a task description is missing. */
     public static final String MISSING_TASK_DESCRIPTION_MESSAGE = "please provide a task description!";
     /** Error shown when a find keyword is missing. */
@@ -16,7 +16,7 @@ public final class ErrorMessages {
     public static final String TASK_INDEX_FORMAT_MESSAGE = "please provide task numbers or ranges separated by "
             + "spaces, (example: delete 1 4-6)";
     /** Error shown when a task type is unsupported. */
-    public static final String UNKNOWN_TASK_TYPE_MESSAGE = "unknown task type!";
+    public static final String UNKNOWN_TASK_TYPE_MESSAGE = "unknown task type :(";
     /** Error shown when deadline syntax is invalid. */
     public static final String DEADLINE_FORMAT_MESSAGE = "please use: deadline DESCRIPTION /by TIME";
     /** Error shown when event syntax is invalid. */

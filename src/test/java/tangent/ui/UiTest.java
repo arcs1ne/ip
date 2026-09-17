@@ -12,6 +12,16 @@ import tangent.task.ToDo;
 
 public class UiTest {
     @Test
+    public void showGuiWelcome_displaysGreetingWithoutBanner() {
+        List<String> messages = new ArrayList<>();
+        Ui ui = new Ui(messages::add);
+
+        ui.showGuiWelcome();
+
+        assertEquals(List.of("good morning/afternoon/evening ^-^\nwhat do you want me to do?"), messages);
+    }
+
+    @Test
     public void showTaskStatusChanged_batchDisplaysSummaryAndTasks() {
         ToDo first = new ToDo("first");
         ToDo second = new ToDo("second");

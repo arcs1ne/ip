@@ -35,6 +35,9 @@ public class MainWindow extends AnchorPane {
     @FXML
     public void initialize() {
         scrollPane.vvalueProperty().bind(dialogContainer.heightProperty());
+        ui.showGuiWelcome();
+        dialogContainer.getChildren().add(DialogBox.getTangentDialog(responseOutput.toString(), tangentImage));
+        responseOutput.setLength(0);
     }
 
     /** Injects the Tangent instance. */

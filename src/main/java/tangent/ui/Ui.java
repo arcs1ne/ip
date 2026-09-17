@@ -19,6 +19,9 @@ public class Ui {
                ██║   ██╔══██║██║╚██╗██║██║   ██║██╔══╝  ██║╚██╗██║   ██║
                ██║   ██║  ██║██║ ╚████║╚██████╔╝███████╗██║ ╚████║   ██║
                ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚══════╝╚═╝  ╚═══╝   ╚═╝""";
+    /** The greeting shown in the graphical interface without the console banner. */
+    private static final String GUI_WELCOME_MESSAGE = "good morning/afternoon/evening ^-^\n"
+            + "what do you want me to do?";
 
     /** Receives formatted messages for display. */
     private final Consumer<String> output;
@@ -58,6 +61,11 @@ public class Ui {
         showDivider();
     }
 
+    /** Displays the compact greeting used by the graphical interface. */
+    public void showGuiWelcome() {
+        display(GUI_WELCOME_MESSAGE);
+    }
+
     /** Displays the divider used to separate responses in the console. */
     public void showDivider() {
         display(DIVIDER);
@@ -77,28 +85,17 @@ public class Ui {
     public void showTaskList(TaskList tasks) {
         if (tasks.isEmpty()) {
             display("no tasks yet!");
-        }
-        for (int i = 0; i < tasks.size(); i++) {
-            display((i + 1) + ". " + tasks.get(i));
+        } else {
+            display("here are your current tasks!");
+            for (int i = 0; i < tasks.size(); i++) {
+                display((i + 1) + ". " + tasks.get(i));
+            }
         }
     }
 
     /** Displays the farewell message shown when the program exits. */
     public void showGoodbye() {
         display("bye o/ hope to see you again soon");
-    }
-
-    /**
-     * Displays confirmation that a task's completion status has changed.
-     *
-     * @param isDone whether the task was marked as done.
-     */
-    public void showTaskStatusChanged(boolean isDone) {
-        if (isDone) {
-            display("i've marked it as done!");
-        } else {
-            display("i've marked it as undone!");
-        }
     }
 
     /** Displays a status-change summary followed by every changed task. */
@@ -123,7 +120,7 @@ public class Ui {
         for (Task task : removedTasks) {
             display(task.toString());
         }
-        display("removed " + removedTasks.size() + " tasks, " + tasks.size() + " tasks remaining!");
+        display("removed " + removedTasks.size() + " tasks, " + tasks.size() + " task(s) remaining!");
     }
 
     /** Displays confirmation that a task was added and displays the new task count. */
