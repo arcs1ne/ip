@@ -28,7 +28,7 @@ public abstract class StatusCommand extends Command {
     protected abstract boolean targetStatus();
 
     /** Displays the confirmation after successful status changes. */
-    protected abstract void showConfirmation(Ui ui, List<Task> changedTasks);
+    protected abstract void showConfirmation(Ui ui, List<Task> changedTasks, List<Task> unchangedTasks);
 
     /**
      * Changes a task's status and saves the change in the storage.
@@ -38,13 +38,23 @@ public abstract class StatusCommand extends Command {
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) throws TangentException {
         tasks.validateIndexes(taskIndexes);
-        List<Task> changedTasks = tasks.getTasksAtIndexes(taskIndexes);
+        List<Task> selectedTasks = tasks.getTasksAtIndexes(taskIndexes);
+        List<Task> changedTasks = selectedTasks.stream().filter(task -> task.isDone() != targetStatus()).toList();
+        List<Task> unchangedTasks = selectedTasks.stream().filter(task -> task.isDone() == targetStatus()).toList();
+        if (changedTasks.isEmpty()) {
+            if (taskIndexes.size() == 1) {
+                ui.showSingleStatusAlreadyApplied(targetStatus());
+            } else {
+                ui.showStatusAlreadyApplied(targetStatus());
+            }
+            return;
+        }
         List<Boolean> previousStatuses = new ArrayList<>();
         for (Task task : changedTasks) {
             previousStatuses.add(task.isDone());
         }
-        for (int taskIndex : taskIndexes) {
-            setStatus(tasks.get(taskIndex), targetStatus());
+        for (Task task : changedTasks) {
+            setStatus(task, targetStatus());
         }
         try {
             storage.save(tasks.toList());
@@ -54,7 +64,7 @@ public abstract class StatusCommand extends Command {
             }
             throw e;
         }
-        showConfirmation(ui, changedTasks);
+        showConfirmation(ui, changedTasks, unchangedTasks);
     }
 
     /** Applies a completion status to a task. */

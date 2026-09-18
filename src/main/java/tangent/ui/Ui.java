@@ -93,6 +93,10 @@ public class Ui {
 
     /** Displays the current-task heading followed by every task in the task list. */
     public void showCurrentTasks(TaskList tasks) {
+        if (tasks.isEmpty()) {
+            showTaskList(tasks);
+            return;
+        }
         display("hello! here are your current tasks:");
         showTaskList(tasks);
     }
@@ -104,12 +108,35 @@ public class Ui {
 
     /** Displays a status-change summary followed by every changed task. */
     public void showTaskStatusChanged(boolean isDone, List<Task> changedTasks) {
+        showTaskStatusChanged(isDone, changedTasks, List.of());
+    }
+
+    /** Displays changed tasks followed by tasks that already had the requested status. */
+    public void showTaskStatusChanged(boolean isDone, List<Task> changedTasks, List<Task> unchangedTasks) {
         String status = isDone ? "done" : "undone";
         String noun = changedTasks.size() == 1 ? "task" : "tasks";
         display("i've marked " + changedTasks.size() + " " + noun + " as " + status + "!");
         for (Task task : changedTasks) {
             display(task.toString());
         }
+        if (!unchangedTasks.isEmpty()) {
+            display("the following task(s) were already marked as " + status + ":");
+            for (Task task : unchangedTasks) {
+                display(task.toString());
+            }
+        }
+    }
+
+    /** Displays a message when every selected task already has the requested status. */
+    public void showStatusAlreadyApplied(boolean isDone) {
+        String status = isDone ? "done" : "undone";
+        display("all selected tasks are already marked as " + status + "!");
+    }
+
+    /** Displays a message when one selected task already has the requested status. */
+    public void showSingleStatusAlreadyApplied(boolean isDone) {
+        String status = isDone ? "done" : "undone";
+        display("the selected task is already marked as " + status + "!");
     }
 
     /** Displays removed tasks in original order followed by the remaining task count. */

@@ -19,7 +19,7 @@ public class MarkCommand extends StatusCommand {
     }
 
     @Override
-    protected void showConfirmation(Ui ui, List<Task> changedTasks) {
-        ui.showTaskStatusChanged(true, changedTasks);
+    protected void showConfirmation(Ui ui, List<Task> changedTasks, List<Task> unchangedTasks) {
+        ui.showTaskStatusChanged(true, changedTasks, unchangedTasks);
     }
 }

@@ -6,7 +6,7 @@ Output comparison normalizes CRLF/LF line endings; all other whitespace and line
 ## Launch command
 
 ```text
-java '-Dstdout.encoding=UTF-8' -cp C:\Users\tangs\Downloads\ip\build-review tangent.Tangent
+java '-Dstdout.encoding=UTF-8' -cp C:\Users\tangs\Downloads\ip\build\classes\java\main tangent.Tangent
 ```
 
 ## Test case: create and list dated tasks
@@ -529,11 +529,13 @@ Matches the complete expected-output block for this test case above.
 
 ## Test case: reload and perform batch mutations
 
-- **Aim:** Verify tasks reload, batch mark/unmark/delete use original indexes, and invalid calendar dates are rejected.
+- **Aim:** Verify tasks reload, batch mark/unmark/delete use original indexes, idempotent status operations, and invalid calendar dates are rejected.
 - **Inputs:**
 
 ```text
 mark 2-3
+mark 1-3
+unmark 2-3
 unmark 2-3
 delete 1 3
 deadline impossible /by 31/2/2019 1800
@@ -560,13 +562,23 @@ i've marked 2 tasks as done!
 [E][X] project meeting (from: Dec 03 2019, 9:00AM to: Dec 03 2019, 11:00AM)
 ____________________________________________________________
 ____________________________________________________________
+i've marked 1 task as done!
+[T][X] borrow book
+the following task(s) were already marked as done:
+[D][X] return book (by: Dec 02 2019, 6:00PM)
+[E][X] project meeting (from: Dec 03 2019, 9:00AM to: Dec 03 2019, 11:00AM)
+____________________________________________________________
+____________________________________________________________
 i've marked 2 tasks as undone!
 [D][ ] return book (by: Dec 02 2019, 6:00PM)
 [E][ ] project meeting (from: Dec 03 2019, 9:00AM to: Dec 03 2019, 11:00AM)
 ____________________________________________________________
 ____________________________________________________________
+all selected tasks are already marked as undone!
+____________________________________________________________
+____________________________________________________________
 got it! i've removed these tasks:
-[T][ ] borrow book
+[T][X] borrow book
 [E][ ] project meeting (from: Dec 03 2019, 9:00AM to: Dec 03 2019, 11:00AM)
 removed 2 tasks, 1 task(s) remaining!
 ____________________________________________________________
@@ -584,7 +596,7 @@ ____________________________________________________________
 
 ## Test case: unmark and reload status
 
-- **Aim:** Verify an unmarked task is saved as incomplete and reloads correctly.
+- **Aim:** Verify unmark idempotence and incomplete status reload correctly.
 - **Inputs:**
 
 ```text
@@ -607,12 +619,48 @@ good morning/afternoon/evening ^-^ I'm TANGENT.
 what do you want me to do?
 ____________________________________________________________
 ____________________________________________________________
-i've marked 1 task as undone!
-[D][ ] return book (by: Dec 02 2019, 6:00PM)
+the selected task is already marked as undone!
 ____________________________________________________________
 ____________________________________________________________
 hello! here are your current tasks:
 1. [D][ ] return book (by: Dec 02 2019, 6:00PM)
+____________________________________________________________
+____________________________________________________________
+bye o/ hope to see you again soon
+____________________________________________________________
+```
+
+## Test case: list with no tasks
+
+- **Aim:** Verify listing an empty task list shows only the empty-list message.
+- **Inputs:**
+
+```text
+delete 1
+list
+bye
+```
+
+- **Expected output:**
+
+```text
+____________________________________________________________
+████████╗ █████╗ ███╗   ██╗ ██████╗ ███████╗███╗   ██╗████████╗
+╚══██╔══╝██╔══██╗████╗  ██║██╔════╝ ██╔════╝████╗  ██║╚══██╔══╝
+   ██║   ███████║██╔██╗ ██║██║  ███╗█████╗  ██╔██╗ ██║   ██║
+   ██║   ██╔══██║██║╚██╗██║██║   ██║██╔══╝  ██║╚██╗██║   ██║
+   ██║   ██║  ██║██║ ╚████║╚██████╔╝███████╗██║ ╚████║   ██║
+   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚══════╝╚═╝  ╚═══╝   ╚═╝
+good morning/afternoon/evening ^-^ I'm TANGENT.
+what do you want me to do?
+____________________________________________________________
+____________________________________________________________
+got it! i've removed this task:
+[D][ ] return book (by: Dec 02 2019, 6:00PM)
+you now have no tasks in the list!
+____________________________________________________________
+____________________________________________________________
+no tasks yet!
 ____________________________________________________________
 ____________________________________________________________
 bye o/ hope to see you again soon
@@ -1314,6 +1362,69 @@ bye o/ hope to see you again soon
 ____________________________________________________________
 ```
 
+- **Result:** PASS
+
+## Test session record — 2026-09-18 (idempotent status commands)
+
+Java 25.0.4 exact console comparison passed all four planned cases in order in isolated `ui-test-status-idempotence-workspace-3`. CRLF/LF line endings normalized per plan rule; all other output matched exactly.
+
+### Attempted tests: all planned cases
+
+- **Aim:** Verify mark/unmark skip tasks already at requested status, report all-selected no-ops, preserve batch behavior, and keep persistence working.
+- **Console input sent:** Exact input blocks from all four planned cases above, in declared order.
+- **Expected output:** Complete expected-output blocks for corresponding planned cases above.
+- **Actual output:** Exact match for all four cases; all processes exited with code 0.
+- **Result:** PASS (4 cases)
+
+## Test session record — 2026-09-18 (single + mixed status commands)
+
+Java 25.0.4 exact console comparison passed all four planned cases in order in isolated `ui-test-status-idempotence-workspace-6`. CRLF/LF line endings normalized per plan rule; all other output matched exactly.
+
+### Attempted tests: all planned cases
+
+- **Aim:** Verify single-index no-op messages, mixed batch reporting, all-selected no-op messages, + persistence.
+- **Console input sent:** Exact input blocks from all four planned cases above, in declared order.
+- **Expected output:** Complete expected-output blocks for corresponding planned cases above.
+- **Actual output:** Exact match for all four cases; all processes exited with code 0.
+- **Result:** PASS (4 cases)
+
+## Test session record — 2026-09-18 (empty list greeting fix)
+
+Java 25.0.4 direct console execution passed all four planned cases in order in isolated `ui-test-empty-list-workspace`. CRLF/LF line endings normalized per plan rule; all other output matched expected output exactly.
+
+### Attempted test: create and list dated tasks
+
+- **Console input sent:** Same input block as planned.
+- **Expected output:** Complete expected-output block under test case.
+- **Actual output:** Complete output matched expected output.
+- **Result:** PASS
+
+### Attempted test: reload and perform batch mutations
+
+- **Console input sent:** Same input block as planned.
+- **Expected output:** Complete expected-output block under test case.
+- **Actual output:** Complete output matched expected output.
+- **Result:** PASS
+
+### Attempted test: unmark and reload status
+
+- **Console input sent:** Same input block as planned.
+- **Expected output:** Complete expected-output block under test case.
+- **Actual output:** Complete output matched expected output.
+- **Result:** PASS
+
+### Attempted test: list with no tasks
+
+- **Console input sent:**
+
+```text
+delete 1
+list
+bye
+```
+
+- **Expected output:** Complete expected-output block under test case.
+- **Actual output:** Complete output matched expected output; empty `list` output was `no tasks yet!` with no greeting.
 - **Result:** PASS
 
 ### Attempted test: reload and perform batch mutations

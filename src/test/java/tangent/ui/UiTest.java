@@ -125,6 +125,15 @@ public class UiTest {
     }
 
     @Test
+    public void showCurrentTasks_emptyListDisplaysOnlyEmptyMessage() {
+        List<String> messages = new ArrayList<>();
+
+        new Ui(messages::add).showCurrentTasks(new TaskList());
+
+        assertEquals(List.of("no tasks yet!"), messages);
+    }
+
+    @Test
     public void showTaskStatusChanged_singularAndEmptyListsUseCorrectSummary() {
         List<String> oneTaskMessages = new ArrayList<>();
         ToDo task = new ToDo("first");
@@ -135,6 +144,42 @@ public class UiTest {
 
         assertEquals(List.of("i've marked 1 task as undone!", "[T][ ] first"), oneTaskMessages);
         assertEquals(List.of("i've marked 0 tasks as done!"), noTaskMessages);
+    }
+
+    @Test
+    public void showStatusAlreadyApplied_usesRequestedStatus() {
+        List<String> markMessages = new ArrayList<>();
+        List<String> unmarkMessages = new ArrayList<>();
+
+        new Ui(markMessages::add).showStatusAlreadyApplied(true);
+        new Ui(unmarkMessages::add).showStatusAlreadyApplied(false);
+
+        assertEquals(List.of("all selected tasks are already marked as done!"), markMessages);
+        assertEquals(List.of("all selected tasks are already marked as undone!"), unmarkMessages);
+    }
+
+    @Test
+    public void showTaskStatusChanged_displaysUnchangedTasksSeparately() {
+        ToDo changedTask = new ToDo("changed");
+        ToDo unchangedTask = new ToDo("unchanged");
+        List<String> messages = new ArrayList<>();
+
+        new Ui(messages::add).showTaskStatusChanged(true, List.of(changedTask), List.of(unchangedTask));
+
+        assertEquals(List.of("i've marked 1 task as done!", "[T][ ] changed",
+                "the following task(s) were already marked as done:", "[T][ ] unchanged"), messages);
+    }
+
+    @Test
+    public void showSingleStatusAlreadyApplied_usesRequestedStatus() {
+        List<String> markMessages = new ArrayList<>();
+        List<String> unmarkMessages = new ArrayList<>();
+
+        new Ui(markMessages::add).showSingleStatusAlreadyApplied(true);
+        new Ui(unmarkMessages::add).showSingleStatusAlreadyApplied(false);
+
+        assertEquals(List.of("the selected task is already marked as done!"), markMessages);
+        assertEquals(List.of("the selected task is already marked as undone!"), unmarkMessages);
     }
 
     @Test

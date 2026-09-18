@@ -141,6 +141,64 @@ public class BatchCommandTest {
     }
 
     @Test
+    public void statusCommand_batchSkipsTasksAlreadyAtTargetStatus() throws TangentException {
+        ToDo alreadyDone = new ToDo("already done");
+        alreadyDone.markAsDone();
+        ToDo notDone = new ToDo("not done");
+        ToDo alreadyDoneAgain = new ToDo("already done again");
+        alreadyDoneAgain.markAsDone();
+        TaskList tasks = new TaskList(alreadyDone, notDone, alreadyDoneAgain);
+        List<String> messages = new ArrayList<>();
+
+        new MarkCommand(List.of(0, 1, 2)).execute(tasks, new Ui(messages::add),
+                new Storage(tempDir.resolve("tangent.txt").toString()));
+
+        assertTrue(tasks.get(0).isDone());
+        assertTrue(tasks.get(1).isDone());
+        assertTrue(tasks.get(2).isDone());
+        assertEquals(List.of("i've marked 1 task as done!", "[T][X] not done",
+                "the following task(s) were already marked as done:", "[T][X] already done",
+                "[T][X] already done again"), messages);
+    }
+
+    @Test
+    public void statusCommand_allTasksAlreadyAtTargetStatus_reportsWithoutSaving() throws TangentException {
+        ToDo doneTask = new ToDo("done");
+        doneTask.markAsDone();
+        ToDo doneTaskAgain = new ToDo("done again");
+        doneTaskAgain.markAsDone();
+        TaskList doneTasks = new TaskList(doneTask, doneTaskAgain);
+        List<String> markMessages = new ArrayList<>();
+
+        new MarkCommand(List.of(0, 1)).execute(doneTasks, new Ui(markMessages::add),
+                new Storage(tempDir.toString()));
+
+        TaskList undoneTasks = new TaskList(new ToDo("undone"), new ToDo("undone again"));
+        List<String> unmarkMessages = new ArrayList<>();
+        new UnmarkCommand(List.of(0, 1)).execute(undoneTasks, new Ui(unmarkMessages::add),
+                new Storage(tempDir.toString()));
+
+        assertEquals(List.of("all selected tasks are already marked as done!"), markMessages);
+        assertEquals(List.of("all selected tasks are already marked as undone!"), unmarkMessages);
+    }
+
+    @Test
+    public void statusCommand_singleTaskAlreadyAtTargetStatus_reportsSingleTaskMessage() throws TangentException {
+        ToDo doneTask = new ToDo("done");
+        doneTask.markAsDone();
+        List<String> markMessages = new ArrayList<>();
+        new MarkCommand(List.of(0)).execute(new TaskList(doneTask), new Ui(markMessages::add),
+                new Storage(tempDir.toString()));
+
+        List<String> unmarkMessages = new ArrayList<>();
+        new UnmarkCommand(List.of(0)).execute(new TaskList(new ToDo("undone")), new Ui(unmarkMessages::add),
+                new Storage(tempDir.toString()));
+
+        assertEquals(List.of("the selected task is already marked as done!"), markMessages);
+        assertEquals(List.of("the selected task is already marked as undone!"), unmarkMessages);
+    }
+
+    @Test
     public void findAndListCommands_reportMatchingAndAllTasks() {
         TaskList tasks = new TaskList(new ToDo("read book"), new ToDo("watch movie"));
         List<String> findMessages = new ArrayList<>();

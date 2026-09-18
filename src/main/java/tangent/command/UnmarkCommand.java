@@ -19,7 +19,7 @@ public class UnmarkCommand extends StatusCommand {
     }
 
     @Override
-    protected void showConfirmation(Ui ui, List<Task> changedTasks) {
-        ui.showTaskStatusChanged(false, changedTasks);
+    protected void showConfirmation(Ui ui, List<Task> changedTasks, List<Task> unchangedTasks) {
+        ui.showTaskStatusChanged(false, changedTasks, unchangedTasks);
     }
 }
