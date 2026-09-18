@@ -13,11 +13,11 @@
             <children>
                 <Label fx:id="speakerName" styleClass="speaker-name" text="You">
                <font>
-                  <Font name="Google Sans SemiBold" size="14.0" />
+                  <Font name="Google Sans SemiBold" size="13.0" />
                </font></Label>
                 <Label fx:id="dialog" styleClass="dialog-label" text="Label">
                <font>
-                  <Font name="Google Sans Flex Regular" size="12.0" />
+                  <Font name="Google Sans Flex Regular" size="11.0" />
                </font></Label>
             </children>
         </VBox>

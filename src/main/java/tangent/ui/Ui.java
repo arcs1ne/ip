@@ -85,12 +85,16 @@ public class Ui {
     public void showTaskList(TaskList tasks) {
         if (tasks.isEmpty()) {
             display("no tasks yet!");
-        } else {
-            display("here are your current tasks!");
-            for (int i = 0; i < tasks.size(); i++) {
-                display((i + 1) + ". " + tasks.get(i));
-            }
         }
+        for (int i = 0; i < tasks.size(); i++) {
+            display((i + 1) + ". " + tasks.get(i));
+        }
+    }
+
+    /** Displays the current-task heading followed by every task in the task list. */
+    public void showCurrentTasks(TaskList tasks) {
+        display("hello! here are your current tasks:");
+        showTaskList(tasks);
     }
 
     /** Displays the farewell message shown when the program exits. */

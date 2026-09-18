@@ -151,9 +151,8 @@ public class BatchCommandTest {
         new FindCommand("BOOK").execute(tasks, findUi, null);
         new ListCommand().execute(tasks, listUi, null);
 
-        assertEquals(List.of("here are the tasks matching the keyword BOOK:", "here are your current tasks!",
-                "1. [T][ ] read book"), findMessages);
-        assertEquals(List.of("here are your current tasks!", "1. [T][ ] read book", "2. [T][ ] watch movie"),
+        assertEquals(List.of("here are the tasks matching the keyword BOOK:", "1. [T][ ] read book"), findMessages);
+        assertEquals(List.of("hello! here are your current tasks:", "1. [T][ ] read book", "2. [T][ ] watch movie"),
                 listMessages);
     }
 

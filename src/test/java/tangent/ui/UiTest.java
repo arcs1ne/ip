@@ -111,7 +111,17 @@ public class UiTest {
 
         new Ui(messages::add).showTaskList(tasks);
 
-        assertEquals(List.of("here are your current tasks!", "1. [T][ ] first", "2. [T][ ] second"), messages);
+        assertEquals(List.of("1. [T][ ] first", "2. [T][ ] second"), messages);
+    }
+
+    @Test
+    public void showCurrentTasks_displaysHeadingBeforeTasks() {
+        List<String> messages = new ArrayList<>();
+        TaskList tasks = new TaskList(new ToDo("first"));
+
+        new Ui(messages::add).showCurrentTasks(tasks);
+
+        assertEquals(List.of("hello! here are your current tasks:", "1. [T][ ] first"), messages);
     }
 
     @Test
@@ -168,8 +178,7 @@ public class UiTest {
         List<String> noMatchMessages = new ArrayList<>();
         new Ui(noMatchMessages::add).showMatchingTasks("book", new TaskList());
 
-        assertEquals(List.of("here are the tasks matching the keyword book:", "here are your current tasks!",
-                "1. [T][ ] read book"), matchMessages);
+        assertEquals(List.of("here are the tasks matching the keyword book:", "1. [T][ ] read book"), matchMessages);
         assertEquals(List.of("there were no matching tasks in the task list!"), noMatchMessages);
     }
 }

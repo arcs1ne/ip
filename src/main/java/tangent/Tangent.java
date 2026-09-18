@@ -19,7 +19,7 @@ public class Tangent {
     /** The task list shared by console and GUI command execution. */
     private TaskList tasks;
     /** Whether most recent command requested application exit. */
-    private boolean exitRequested;
+    private boolean isExitRequested;
 
     /** Creates a new instance of Tangent using the supplied file path. */
     public Tangent(String filePath) {
@@ -73,7 +73,7 @@ public class Tangent {
 
     /** Returns whether GUI should close after the most recent command. */
     public boolean isExitRequested() {
-        return exitRequested;
+        return isExitRequested;
     }
 
     /** Executes a parsed command with shared application state. */
@@ -95,7 +95,7 @@ public class Tangent {
             }
             Command command = Parser.parse(input.trim());
             executeCommand(command, commandUi);
-            exitRequested = command.isExit();
+            isExitRequested = command.isExit();
         } catch (TangentException e) {
             commandUi.showError(e.getMessage());
         }
