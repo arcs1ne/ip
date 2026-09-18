@@ -1,62 +1,106 @@
 # Tangent User Guide
 
-Tangent is chatbot for managing tasks, deadlines, and events.
+Tangent is a chatbot for managing tasks, deadlines, and events. It can be launched with a command line
+interface or a GUI. Type a command for the chatbot to function. Changes save automatically.
 
-Enter commands in chatbot window. Changes save automatically.
+## Dates
 
-Task numbers start at `1`. Use spaces for separate tasks + `-` for inclusive ranges, such as `mark 1 3-5`.
-Use date format `d/M/yyyy HHmm`, such as `25/9/2026 2359`.
+Dates must be entered in the format `d/M/yyyy HHmm`, such as `25/9/2026 2359`.
+
+## Task indexes
+
+For delete, mark and unmark commands that require task indexes as inputs, note the following:
+
+- Task numbers start at `1`.
+- Use spaces to separate indexes.
+- Use a hyphen to denote index ranges.
+- Index ranges include both ends.
+
+Example: `mark 2 5 7-9` will target task 2, 5, 7, 8 and 9.
 
 ## `todo`
 
-Adds task without date or time.
+Adds a task without a date or time.
 
-Example: `todo read chapter 5`
+Format: `todo DESCRIPTION`
+
+Example:
+
+- `todo finish project`
 
 ## `deadline`
 
-Adds task with deadline.
+Adds a task that must be completed by a specific time.
 
-Example: `deadline submit report /by 25/9/2026 2359`
+Format: `deadline DESCRIPTION /by DATE TIME`
+
+Example:
+
+- `deadline submit report /by 25/9/2026 2359` 
 
 ## `event`
 
-Adds task with start + end time.
+Adds task with a start and end time.
 
-Example: `event team meeting /from 26/9/2026 1400 /to 26/9/2026 1500`
+Format: `event DESCRIPTION /from DATE TIME /to DATE TIME`
+
+End time must be later than the start time.
+
+Example:
+
+- `event team meeting /from 26/9/2026 1400 /to 26/9/2026 1500` 
 
 ## `list`
 
-Shows all tasks with task numbers.
+Shows all saved tasks with task numbers.
 
-Example: `list`
+Format: `list`
 
 ## `find`
 
-Shows tasks whose descriptions contain keyword, case-insensitive.
+Shows tasks whose descriptions contain the specified keyword, case-insensitive.
 
-Example: `find report`
+Format: `find KEYWORD`
+
+Example:
+
+- `find report`
 
 ## `mark`
 
 Marks one or more tasks as done.
 
-Example: `mark 1 3-5`
+Format: `mark INDEX [MORE_INDEXES]`
+
+Examples:
+
+- `mark 6` marks task 6 as done.
+- `mark 2 5 7-9` marks task 2, 5, 7, 8 and 9 as done.
 
 ## `unmark`
 
 Marks one or more tasks as undone.
 
-Example: `unmark 2`
+Format: `unmark INDEX [MORE_INDEXES]`
+
+Examples:
+
+- `unmark 6` marks task 6 as not done.
+- `unmark 2 5 7-9` marks task 2, 5, 7, 8 and 9 as not done.
 
 ## `delete`
 
-Deletes one or more tasks permanently.
+Permanently deletes one or more tasks.
 
-Example: `delete 1 3-5`
+Format: `delete INDEX [MORE_INDEXES]`
+
+Examples:
+
+- `delete 6` deletes task 6.
+- `delete 2 5 7-9` deletes task 2, 5, 7, 8 and 9.
 
 ## `bye`
 
 Closes Tangent.
 
-Example: `bye`
+Format: `bye`
