@@ -18,7 +18,7 @@ For delete, mark and unmark commands that require task indexes as inputs, note t
 
 Example: `mark 2 5 7-9` will target task 2, 5, 7, 8 and 9.
 
-## `todo`
+## Adding a todo: `todo`
 
 Adds a task without a date or time.
 
@@ -28,7 +28,7 @@ Example:
 
 - `todo finish project`
 
-## `deadline`
+## Adding a deadline: `deadline`
 
 Adds a task that must be completed by a specific time.
 
@@ -38,7 +38,7 @@ Example:
 
 - `deadline submit report /by 25/9/2026 2359` 
 
-## `event`
+## Adding an event: `event`
 
 Adds task with a start and end time.
 
@@ -50,13 +50,13 @@ Example:
 
 - `event team meeting /from 26/9/2026 1400 /to 26/9/2026 1500` 
 
-## `list`
+## Listing all tasks: `list`
 
 Shows all saved tasks with task numbers.
 
 Format: `list`
 
-## `find`
+## Finding tasks by keyword: `find`
 
 Shows tasks whose descriptions contain the specified keyword, case-insensitive.
 
@@ -66,7 +66,7 @@ Example:
 
 - `find report`
 
-## `mark`
+## Marking tasks as done: `mark`
 
 Marks one or more tasks as done.
 
@@ -77,7 +77,7 @@ Examples:
 - `mark 6` marks task 6 as done.
 - `mark 2 5 7-9` marks task 2, 5, 7, 8 and 9 as done.
 
-## `unmark`
+## Marking tasks as undone: `unmark`
 
 Marks one or more tasks as undone.
 
@@ -88,7 +88,7 @@ Examples:
 - `unmark 6` marks task 6 as not done.
 - `unmark 2 5 7-9` marks task 2, 5, 7, 8 and 9 as not done.
 
-## `delete`
+## Deleting tasks: `delete`
 
 Permanently deletes one or more tasks.
 
@@ -99,7 +99,7 @@ Examples:
 - `delete 6` deletes task 6.
 - `delete 2 5 7-9` deletes task 2, 5, 7, 8 and 9.
 
-## `bye`
+## Exiting the program: `bye`
 
 Closes Tangent.
 
