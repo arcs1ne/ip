@@ -106,6 +106,7 @@ Closes Tangent.
 Format: `bye`
 
 ## Command summary
+
 | Action | Command | Example |
 | --- | --- | --- |
 | Add todo | `todo DESCRIPTION` | `todo finish project` |
