@@ -1,30 +1,62 @@
 # Tangent User Guide
 
-// Update the title above to match the actual product name
+Tangent is chatbot for managing tasks, deadlines, and events.
 
-// Product screenshot goes here
+Enter commands in chatbot window. Changes save automatically.
 
-// Product intro goes here
+Task numbers start at `1`. Use spaces for separate tasks + `-` for inclusive ranges, such as `mark 1 3-5`.
+Use date format `d/M/yyyy HHmm`, such as `25/9/2026 2359`.
 
-## Adding deadlines
+## `todo`
 
-// Describe the action and its outcome.
+Adds task without date or time.
 
-// Give examples of usage
+Example: `todo read chapter 5`
 
-Example: `keyword (optional arguments)`
+## `deadline`
 
-// A description of the expected outcome goes here
+Adds task with deadline.
 
-```
-expected output
-```
+Example: `deadline submit report /by 25/9/2026 2359`
 
-## Feature ABC
+## `event`
 
-// Feature details
+Adds task with start + end time.
 
+Example: `event team meeting /from 26/9/2026 1400 /to 26/9/2026 1500`
 
-## Feature XYZ
+## `list`
 
-// Feature details
+Shows all tasks with task numbers.
+
+Example: `list`
+
+## `find`
+
+Shows tasks whose descriptions contain keyword, case-insensitive.
+
+Example: `find report`
+
+## `mark`
+
+Marks one or more tasks as done.
+
+Example: `mark 1 3-5`
+
+## `unmark`
+
+Marks one or more tasks as undone.
+
+Example: `unmark 2`
+
+## `delete`
+
+Deletes one or more tasks permanently.
+
+Example: `delete 1 3-5`
+
+## `bye`
+
+Closes Tangent.
+
+Example: `bye`
