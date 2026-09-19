@@ -83,7 +83,7 @@ public class TaskList {
     /** Restores command indexes to refer to the complete task list. */
     public void resetDisplayedIndexes() {
         displayedTaskIndexes = createIdentityIndexes();
-    }   
+    }
 
     /** Returns selected tasks in their original task-list order. */
     public List<Task> getTasksAtIndexes(List<Integer> indexes) {
