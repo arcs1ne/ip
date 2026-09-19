@@ -104,3 +104,17 @@ Examples:
 Closes Tangent.
 
 Format: `bye`
+
+## Command summary
+
+| Action | Command | Example |
+| --- | --- | --- |
+| Add todo | `todo DESCRIPTION` | `todo finish project` |
+| Add deadline | `deadline DESCRIPTION /by DATE TIME` | `deadline submit report /by 25/9/2026 2359` |
+| Add event | `event DESCRIPTION /from DATE TIME /to DATE TIME` | `event team meeting /from 26/9/2026 1400 /to 26/9/2026 1500` |
+| List | `list` | `list` |
+| Find | `find KEYWORD` | `find report` |
+| Mark done | `mark INDEX [MORE_INDEXES]` | `mark 6` |
+| Mark not done | `unmark INDEX [MORE_INDEXES]` | `unmark 2 5 7-9` |
+| Delete | `delete INDEX [MORE_INDEXES]` | `delete 3-5` |
+| Exit | `bye` | `bye` |
