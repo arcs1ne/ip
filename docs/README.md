@@ -9,14 +9,15 @@ Dates must be entered in the format `d/M/yyyy HHmm`, such as `25/9/2026 2359`.
 
 ## Task indexes
 
-For delete, mark and unmark commands that require task indexes as inputs, note the following:
+For `delete`, `mark` and `unmark` commands that require task indexes as inputs, note the following:
 
 - Task numbers start at `1`.
 - Use spaces to separate indexes.
 - Use a hyphen to denote index ranges.
 - Index ranges include both ends.
+- If a `delete`, `mark` or `unmark` command is ran **directly after a `find` command**, it will use the indexes of the `find` command's output.
 
-Example: `mark 2 5 7-9` will target task 2, 5, 7, 8 and 9.
+Example: `mark 2 5 7-9` will mark task 2, 5, 7, 8 and 9.
 
 ## Adding a todo: `todo`
 
