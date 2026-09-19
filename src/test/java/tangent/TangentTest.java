@@ -80,6 +80,20 @@ public class TangentTest {
     }
 
     @Test
+    public void executeCommand_invalidStoredDate_reportsDataFileRecord() throws Exception {
+        Path dataFile = tempDir.resolve("tangent.txt");
+        Files.writeString(dataFile, "D | 0 | return book | 31/2/2019 1800");
+        Tangent tangent = new Tangent(dataFile.toString());
+        List<String> errors = new ArrayList<>();
+
+        tangent.executeCommand("list", new Ui(_ -> { }, errors::add));
+
+        assertEquals(List.of(String.format(ErrorMessages.INVALID_STORED_DATE_MESSAGE,
+                "D | 0 | return book | 31/2/2019 1800")), errors);
+        assertFalse(tangent.isExitRequested());
+    }
+
+    @Test
     public void run_consoleLoopProcessesCommandsUntilBye() throws Exception {
         Path dataFile = tempDir.resolve("tangent.txt");
         InputStream originalInput = System.in;

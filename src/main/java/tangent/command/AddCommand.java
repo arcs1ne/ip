@@ -33,6 +33,7 @@ public class AddCommand extends Command {
             tasks.removeLast();
             throw e;
         }
+        tasks.resetDisplayedIndexes();
         ui.showTaskAdded(task, tasks);
     }
 }

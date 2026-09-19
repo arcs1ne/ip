@@ -26,12 +26,12 @@ public class DeleteCommand extends Command {
      */
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) throws TangentException {
-        tasks.validateIndexes(taskIndexes);
-        List<Task> removedTasks = tasks.removeAtIndexes(taskIndexes);
+        List<Integer> resolvedIndexes = tasks.resolveDisplayedIndexes(taskIndexes);
+        List<Task> removedTasks = tasks.removeAtIndexes(resolvedIndexes);
         try {
             storage.save(tasks.toList());
         } catch (TangentException e) {
-            tasks.restoreAtIndexes(taskIndexes, removedTasks);
+            tasks.restoreAtIndexes(resolvedIndexes, removedTasks);
             throw e;
         }
         ui.showTasksDeleted(removedTasks, tasks);

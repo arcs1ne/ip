@@ -30,6 +30,8 @@ public class Parser {
     private static final DateTimeFormatter INPUT_FORMATTER = DateTimeFormatter
             .ofPattern("d/M/uuuu HHmm")
             .withResolverStyle(ResolverStyle.STRICT);
+    /** Pattern used to separate date-format errors from invalid calendar dates. */
+    private static final String INPUT_DATE_PATTERN = "\\d{1,2}/\\d{1,2}/\\d{4} \\d{4}";
     /** The separator to be used in the data file to separate the details of a task. */
     private static final String FIELD_SEPARATOR = " | ";
     /** The marker to identify when a deadline should follow in a {@code Deadline} object. */
@@ -249,13 +251,17 @@ public class Parser {
     /**
      * Parses a user-supplied date and time.
      *
-     * @throws TangentException if the provided date and time does not match the {@code INPUT_FORMATTER}.
+     * @throws TangentException if the provided date and time has a wrong format or is not a valid calendar value.
      */
     private static LocalDateTime parseDateTime(String input) throws TangentException {
-        try {
-            return LocalDateTime.parse(input.trim(), INPUT_FORMATTER);
-        } catch (DateTimeParseException e) {
+        String trimmedInput = input.trim();
+        if (!trimmedInput.matches(INPUT_DATE_PATTERN)) {
             throw new TangentException(ErrorMessages.BAD_DATE_MESSAGE);
+        }
+        try {
+            return LocalDateTime.parse(trimmedInput, INPUT_FORMATTER);
+        } catch (DateTimeParseException e) {
+            throw new TangentException(ErrorMessages.INVALID_DATE_MESSAGE);
         }
     }
 }

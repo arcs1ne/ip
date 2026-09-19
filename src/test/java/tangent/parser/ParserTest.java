@@ -155,11 +155,17 @@ public class ParserTest {
     }
 
     @Test
-    public void parseTask_invalidDate_throwsBadDateError() {
-        assertExceptionMessage(ErrorMessages.BAD_DATE_MESSAGE, () -> Parser.parseTask(
-                "return book /by 31/2/2019 1800", CommandTypes.DEADLINE));
+    public void parseTask_invalidDate_throwsInvalidDateError() {
+        assertExceptionMessage(ErrorMessages.INVALID_DATE_MESSAGE, () -> Parser.parseTask(
+                "return book /by 32/01/2024 1800", CommandTypes.DEADLINE));
         assertExceptionMessage(ErrorMessages.BAD_DATE_MESSAGE, () -> Parser.parseTask(
                 "meeting /from 3/12/2019 0900 /to 2560", CommandTypes.EVENT));
+    }
+
+    @Test
+    public void parseTask_malformedDate_throwsBadDateError() {
+        assertExceptionMessage(ErrorMessages.BAD_DATE_MESSAGE, () -> Parser.parseTask(
+                "return book /by 31-2-2019 1800", CommandTypes.DEADLINE));
     }
 
     @Test

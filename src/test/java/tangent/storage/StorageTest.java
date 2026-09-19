@@ -99,9 +99,8 @@ public class StorageTest {
 
         TangentException exception = assertThrows(TangentException.class, storage::load);
 
-        assertEquals(
-                ErrorMessages.BAD_DATE_MESSAGE,
-                exception.getMessage());
+        assertEquals(String.format(ErrorMessages.INVALID_STORED_DATE_MESSAGE,
+                "D | 0 | return book | 31/2/2019 1800"), exception.getMessage());
     }
 
     @Test
@@ -208,7 +207,8 @@ public class StorageTest {
         TangentException exception = assertThrows(TangentException.class, () -> new Storage(
                 dataFile.toString()).load());
 
-        assertEquals(ErrorMessages.BAD_DATE_MESSAGE, exception.getMessage());
+        assertEquals(String.format(ErrorMessages.INVALID_STORED_DATE_MESSAGE,
+                "E | 0 | meeting | 31/2/2019 0900 | 3/12/2019 1100"), exception.getMessage());
     }
 
     @Test

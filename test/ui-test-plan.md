@@ -160,7 +160,7 @@ bye
 mark 2-3
 unmark 2-3
 delete 1 3
-deadline impossible /by 31/2/2019 1800
+deadline impossible /by 32/01/2024 1800
 list
 bye
 ```
@@ -583,7 +583,7 @@ got it! i've removed these tasks:
 removed 2 tasks, 1 task(s) remaining!
 ____________________________________________________________
 ____________________________________________________________
-bad date format :( ensure your dates are in the format DD/MM/YYYY HHmm (example: 07/06/2026 2200)
+invalid date :( ensure your date is a real calendar date (example: 31/02/2024 does not exist)
 ____________________________________________________________
 ____________________________________________________________
 hello! here are your current tasks:
@@ -1363,6 +1363,71 @@ ____________________________________________________________
 ```
 
 - **Result:** PASS
+
+## Test session record — 2026-09-20 (find-result indexes)
+
+Java 25.0.4 direct console compilation + focused UI scenario passed.
+
+### Attempted scenario
+
+- **Aim:** Use indexes from `find` result for mark, unmark, and delete.
+- **Console input sent:**
+
+```text
+find wordle
+mark 1
+find wordle
+unmark 1
+find wordle
+delete 1
+list
+bye
+```
+
+- **Expected output:** `mark 1` + `unmark 1` target `play wordle`; `delete 1` removes `play wordle`; list retains `first task` + `last task`.
+- **Actual output:** Exact focused scenario match.
+- **Result:** PASS
+
+## Test session record — 2026-09-20 (stored invalid-date context)
+
+Java 25.0.4 direct console compilation + exact comparison passed first planned case. Changed stored-invalid-date path was also smoke-tested: it reports data-file record instead of command-input date guidance.
+
+### Attempted test: create and list dated tasks
+
+- **Console input sent:**
+
+```text
+todo borrow book
+deadline return book /by 2/12/2019 1800
+event project meeting /from 3/12/2019 0900 /to 3/12/2019 1100
+list
+bye
+```
+
+- **Expected output:**
+
+```text
+Matches complete expected-output block for this test case above.
+```
+
+- **Actual output:**
+
+```text
+Exact match; process exited with code 0.
+```
+
+- **Result:** PASS
+
+## Test session record — 2026-09-20 (date validation split)
+
+Java 25.0.4 direct console compilation + exact comparison passed all four planned cases in order. Invalid calendar input `32/01/2024 1800` produced the new invalid-date message; malformed input retained bad-date-format message.
+
+### Attempted tests
+
+- **Inputs:** Complete input blocks from four planned cases above, in declared order.
+- **Expected output:** Complete expected-output blocks from four planned cases above.
+- **Actual output:** Exact match for each expected-output block.
+- **Result:** PASS (4/4)
 
 ## Test session record — 2026-09-18 (idempotent status commands)
 

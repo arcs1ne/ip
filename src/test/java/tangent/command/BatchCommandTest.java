@@ -215,6 +215,34 @@ public class BatchCommandTest {
     }
 
     @Test
+    public void findThenDelete_usesMatchingTaskIndex() throws TangentException {
+        TaskList tasks = new TaskList(new ToDo("first task"), new ToDo("play wordle"),
+                new ToDo("last task"));
+        Storage storage = new Storage(tempDir.resolve("tangent.txt").toString());
+
+        new FindCommand("wordle").execute(tasks, new Ui(_ -> { }), storage);
+        new DeleteCommand(List.of(1)).execute(tasks, new Ui(_ -> { }), storage);
+
+        assertEquals(List.of("first task", "last task"),
+                tasks.toList().stream().map(Task::getDescription).toList());
+    }
+
+    @Test
+    public void findThenMarkAndUnmark_useMatchingTaskIndex() throws TangentException {
+        TaskList tasks = new TaskList(new ToDo("first task"), new ToDo("play wordle"),
+                new ToDo("last task"));
+        Storage storage = new Storage(tempDir.resolve("tangent.txt").toString());
+
+        new FindCommand("wordle").execute(tasks, new Ui(_ -> { }), storage);
+        new MarkCommand(List.of(1)).execute(tasks, new Ui(_ -> { }), storage);
+        assertTrue(tasks.get(1).isDone());
+
+        new FindCommand("wordle").execute(tasks, new Ui(_ -> { }), storage);
+        new UnmarkCommand(List.of(1)).execute(tasks, new Ui(_ -> { }), storage);
+        assertFalse(tasks.get(1).isDone());
+    }
+
+    @Test
     public void exitCommand_isExitAndReportsGoodbye() {
         List<String> messages = new ArrayList<>();
         ExitCommand command = new ExitCommand();

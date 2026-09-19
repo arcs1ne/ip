@@ -14,39 +14,48 @@ import tangent.exception.TangentException;
 public class TaskList {
     /** The task list containing the tasks currently held in memory. */
     private final List<Task> tasks;
+    /** Original indexes represented by the most recent find result. */
+    private List<Integer> displayedTaskIndexes;
 
     /** Creates an empty task list. */
     public TaskList() {
         this.tasks = new ArrayList<>();
+        this.displayedTaskIndexes = new ArrayList<>();
     }
 
     /** Creates a task list containing the supplied loaded tasks. */
     public TaskList(List<Task> tasks) {
         assert tasks != null : "loaded task collection must exist";
         this.tasks = new ArrayList<>(tasks);
+        this.displayedTaskIndexes = createIdentityIndexes();
     }
 
     /** Creates a task list containing the supplied tasks */
     public TaskList(Task... tasks) {
         assert tasks != null : "task varargs must exist";
         this.tasks = new ArrayList<>(List.of(tasks));
+        this.displayedTaskIndexes = createIdentityIndexes();
     }
 
     /** Adds a task to the end of this list. */
     public void add(Task task) {
         assert task != null : "task list must not contain null tasks";
         tasks.add(task);
+        resetDisplayedIndexes();
     }
 
     /** Adds a task at the specified 0-based index in this list. */
     public void add(int index, Task task) {
         assert task != null : "task list must not contain null tasks";
         tasks.add(index, task);
+        resetDisplayedIndexes();
     }
 
     /** Removes and returns the final task in this list. */
     public Task removeLast() {
-        return tasks.removeLast();
+        Task removedTask = tasks.removeLast();
+        resetDisplayedIndexes();
+        return removedTask;
     }
 
     /** Returns the task at the specified 0-based index. */
@@ -62,6 +71,19 @@ public class TaskList {
             }
         }
     }
+
+    /** Converts indexes shown by the most recent find result to indexes in this task list. */
+    public List<Integer> resolveDisplayedIndexes(List<Integer> indexes) throws TangentException {
+        validateIndexesAgainst(indexes, displayedTaskIndexes.size());
+        List<Integer> resolvedIndexes = indexes.stream().map(displayedTaskIndexes::get).toList();
+        resetDisplayedIndexes();
+        return resolvedIndexes;
+    }
+
+    /** Restores command indexes to refer to the complete task list. */
+    public void resetDisplayedIndexes() {
+        displayedTaskIndexes = createIdentityIndexes();
+    }   
 
     /** Returns selected tasks in their original task-list order. */
     public List<Task> getTasksAtIndexes(List<Integer> indexes) {
@@ -112,9 +134,32 @@ public class TaskList {
     /** Returns a list of tasks with descriptions containing the {@code keyword} (case-insensitive). */
     public TaskList find(String keyword) {
         String normalizedKeyword = keyword.toLowerCase(Locale.ROOT);
-        List<Task> matchingTasks = tasks.stream()
-                .filter(task -> task.getDescription().toLowerCase(Locale.ROOT).contains(normalizedKeyword))
-                .toList();
+        List<Integer> matchingIndexes = new ArrayList<>();
+        for (int index = 0; index < tasks.size(); index++) {
+            if (tasks.get(index).getDescription().toLowerCase(Locale.ROOT).contains(normalizedKeyword)) {
+                matchingIndexes.add(index);
+            }
+        }
+        displayedTaskIndexes = matchingIndexes;
+        List<Task> matchingTasks = matchingIndexes.stream().map(tasks::get).toList();
         return new TaskList(matchingTasks);
+    }
+
+    /** Validates indexes against a supplied display size. */
+    private void validateIndexesAgainst(List<Integer> indexes, int displaySize) throws TangentException {
+        for (int index : indexes) {
+            if (index < 0 || index >= displaySize) {
+                throw new TangentException(ErrorMessages.INVALID_TASK_INDEX_MESSAGE);
+            }
+        }
+    }
+
+    /** Creates zero-based indexes for every task in this list. */
+    private List<Integer> createIdentityIndexes() {
+        List<Integer> indexes = new ArrayList<>();
+        for (int index = 0; index < tasks.size(); index++) {
+            indexes.add(index);
+        }
+        return indexes;
     }
 }

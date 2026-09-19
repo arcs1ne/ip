@@ -28,6 +28,11 @@ public final class ErrorMessages {
     /** Error shown when a date does not match the accepted format. */
     public static final String BAD_DATE_MESSAGE = "bad date format :( ensure your dates are in the format "
             + "DD/MM/YYYY HHmm (example: 07/06/2026 2200)";
+    /** Error shown when a date matches the accepted format but does not exist. */
+    public static final String INVALID_DATE_MESSAGE = "invalid date :( ensure your date is a real calendar date "
+            + "(example: 31/02/2024 does not exist)";
+    /** Error shown when a saved task record contains an invalid date. */
+    public static final String INVALID_STORED_DATE_MESSAGE = "data file contains an invalid date in task record: %s";
     /** Error shown when the configured storage path is a directory. */
     public static final String DATA_PATH_DIRECTORY_MESSAGE = "data path is a directory: %s";
     /** Error shown when storage receives no task list. */

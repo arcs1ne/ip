@@ -150,12 +150,12 @@ public class Storage {
                 break;
             case DEADLINE_TYPE:
                 requireFieldCount(data, 4, line);
-                task = new Deadline(data[2], parseFileDateTime(data[3]));
+                task = new Deadline(data[2], parseFileDateTime(data[3], line));
                 break;
             case EVENT_TYPE:
                 requireFieldCount(data, 5, line);
-                LocalDateTime from = parseFileDateTime(data[3]);
-                LocalDateTime to = parseFileDateTime(data[4]);
+                LocalDateTime from = parseFileDateTime(data[3], line);
+                LocalDateTime to = parseFileDateTime(data[4], line);
                 if (!to.isAfter(from)) {
                     throw new TangentException(String.format(ErrorMessages.INVALID_STORED_EVENT_RANGE_MESSAGE, line));
                 }
@@ -213,11 +213,11 @@ public class Storage {
      *
      * @throws TangentException if the date stored in the data file does not match {@code FILE_DATE_FORMATTER}.
      */
-    private LocalDateTime parseFileDateTime(String input) throws TangentException {
+    private LocalDateTime parseFileDateTime(String input, String line) throws TangentException {
         try {
             return LocalDateTime.parse(input.trim(), FILE_DATE_FORMATTER);
         } catch (DateTimeParseException e) {
-            throw new TangentException(ErrorMessages.BAD_DATE_MESSAGE);
+            throw new TangentException(String.format(ErrorMessages.INVALID_STORED_DATE_MESSAGE, line));
         }
     }
 

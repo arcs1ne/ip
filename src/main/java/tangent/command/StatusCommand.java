@@ -37,8 +37,8 @@ public abstract class StatusCommand extends Command {
      */
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) throws TangentException {
-        tasks.validateIndexes(taskIndexes);
-        List<Task> selectedTasks = tasks.getTasksAtIndexes(taskIndexes);
+        List<Integer> resolvedIndexes = tasks.resolveDisplayedIndexes(taskIndexes);
+        List<Task> selectedTasks = tasks.getTasksAtIndexes(resolvedIndexes);
         List<Task> changedTasks = selectedTasks.stream().filter(task -> task.isDone() != targetStatus()).toList();
         List<Task> unchangedTasks = selectedTasks.stream().filter(task -> task.isDone() == targetStatus()).toList();
         if (changedTasks.isEmpty()) {
