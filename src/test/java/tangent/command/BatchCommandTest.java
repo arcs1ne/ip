@@ -222,7 +222,7 @@ public class BatchCommandTest {
         Storage storage = new Storage(tempDir.resolve("tangent.txt").toString());
 
         new FindCommand("wordle").execute(tasks, new Ui(_ -> { }), storage);
-        new DeleteCommand(List.of(1)).execute(tasks, new Ui(_ -> { }), storage);
+        new DeleteCommand(List.of(0)).execute(tasks, new Ui(_ -> { }), storage);
 
         assertEquals(List.of("first task", "last task"),
                 tasks.toList().stream().map(Task::getDescription).toList());
@@ -235,11 +235,11 @@ public class BatchCommandTest {
         Storage storage = new Storage(tempDir.resolve("tangent.txt").toString());
 
         new FindCommand("wordle").execute(tasks, new Ui(_ -> { }), storage);
-        new MarkCommand(List.of(1)).execute(tasks, new Ui(_ -> { }), storage);
+        new MarkCommand(List.of(0)).execute(tasks, new Ui(_ -> { }), storage);
         assertTrue(tasks.get(1).isDone());
 
         new FindCommand("wordle").execute(tasks, new Ui(_ -> { }), storage);
-        new UnmarkCommand(List.of(1)).execute(tasks, new Ui(_ -> { }), storage);
+        new UnmarkCommand(List.of(0)).execute(tasks, new Ui(_ -> { }), storage);
         assertFalse(tasks.get(1).isDone());
     }
 
